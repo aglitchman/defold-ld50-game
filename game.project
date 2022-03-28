@@ -1,0 +1,36 @@
+[bootstrap]
+main_collection = /main/main.collectionc
+render = /scene3d/render/render3d.renderc
+
+[script]
+shared_state = 1
+
+[display]
+width = 1920
+height = 1080
+display_profiles = /scene3d/helpers/gui.display_profilesc
+high_dpi = 1
+
+[android]
+input_method = HiddenInputField
+
+[project]
+title = ld50_game
+developer = Artsiom Trubchyk
+version = 1.0.0
+dependencies#0 = https://github.com/indiesoftby/defold-scene3d/archive/refs/heads/main.zip
+
+[input]
+game_binding = /builtins/input/all.input_bindingc
+
+[html5]
+heap_size = 64
+cssfile = /builtins/manifests/web/dark_theme.css
+scale_mode = stretch
+
+[render]
+clear_color_alpha = 1.0
+clear_color_red = 0.25
+clear_color_green = 0.25
+clear_color_blue = 0.25
+
