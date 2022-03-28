@@ -1,5 +1,5 @@
 [bootstrap]
-main_collection = /main/main.collectionc
+main_collection = /ld50/main.collectionc
 render = /scene3d/render/render3d.renderc
 
 [script]
@@ -19,6 +19,11 @@ title = ld50_game
 developer = Artsiom Trubchyk
 version = 1.0.0
 dependencies#0 = https://github.com/indiesoftby/defold-scene3d/archive/refs/heads/main.zip
+dependencies#1 = https://github.com/britzl/ludobits/archive/7.1.0.zip
+dependencies#2 = https://github.com/britzl/defold-screenshot/archive/1.8.2.zip
+dependencies#3 = https://github.com/britzl/defold-clipboard/archive/1.3.0.zip
+dependencies#4 = https://github.com/indiesoftby/defold-pointer-lock/archive/1.0.0.zip
+dependencies#5 = https://github.com/subsoap/defos/archive/refs/tags/v.2.7.0.zip
 
 [input]
 game_binding = /builtins/input/all.input_bindingc
@@ -33,4 +38,50 @@ clear_color_alpha = 1.0
 clear_color_red = 0.25
 clear_color_green = 0.25
 clear_color_blue = 0.25
+
+[physics]
+scale = 1.0
+gravity_y = -9.8
+type = 3D
+max_collisions = 10000
+max_contacts = 10000
+ray_cast_limit_3d = 1000
+trigger_overlap_capacity = 100
+world_count = 5
+
+[graphics]
+max_draw_calls = 10000
+max_debug_vertices = 100000
+texture_profiles = /ld50/compressed.texture_profiles
+
+[sprite]
+max_count = 10000
+
+[model]
+max_count = 10000
+
+[mesh]
+max_count = 10000
+
+[resource]
+max_resources = 10000
+
+[collection_proxy]
+max_count = 10
+
+[sound]
+max_sound_buffers = 100
+max_component_count = 100
+
+[shader]
+output_spirv = 1
+
+[druid]
+no_auto_input = 1
+
+[scene3d]
+anisotropic_filtering = 4
+
+[collection]
+max_instances = 2048
 
