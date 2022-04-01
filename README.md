@@ -6,5 +6,5 @@ Currently, it contains only the basic setup of 3D game.
 
 ## License
 
-Apache 2.0 License.
+MIT License.
 
