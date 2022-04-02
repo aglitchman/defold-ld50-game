@@ -35,14 +35,12 @@ end
 function on_message(self, message_id, message, sender)
     if message_id == hash("road_dust") then
         local factory_url = self.factories[math.random(1, #self.factories)]
-        local obj_id = factory.create(factory_url, message.position)
+        local obj_id = factory.create(factory_url, message.position, nil, nil, 0.0001)
 
-        if message.scale then
-            go.set_scale(message.scale, obj_id)
-        end
-
-        local lifetime = 0.35
-        go.animate(obj_id, "scale", go.PLAYBACK_ONCE_FORWARD, 0.0001, go.EASING_INQUAD, lifetime)
+        local lifetime = 0.4
+        go.animate(obj_id, "scale", go.PLAYBACK_ONCE_FORWARD, message.scale or 1, go.EASING_OUTQUAD, lifetime * 0.3, 0, function (self)
+            go.animate(obj_id, "scale", go.PLAYBACK_ONCE_FORWARD, 0.0001, go.EASING_INQUART, lifetime * 0.7)
+        end)
         -- go.animate(obj_id, "position", go.PLAYBACK_ONCE_FORWARD, message.position + vmath.vector3(0, -1, 0), go.EASING_INQUAD, lifetime)
 
         table.insert(self.instances, {

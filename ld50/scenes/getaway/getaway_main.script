@@ -1,0 +1,35 @@
+local audio = require("ld50.scripts.audio")
+local level_state = require("ld50.scenes.getaway.level_state")
+local render3d = require("scene3d.render.render3d")
+
+go.property("acquire_input_focus", true)
+go.property("control_script", msg.url("/start_point#getaway_control"))
+
+function init(self)
+    print("getaway_main: init()")
+
+    if self.acquire_input_focus then
+        msg.post(".", hash("acquire_input_focus"))
+    end
+
+    level_state.reset()
+
+    msg.post(self.control_script, "start")
+
+    audio.play_bgm("music1")
+end
+
+function final(self)
+    print("getaway_main: final()")
+
+    audio.stop_bgm("music1")
+end
+
+function update(self, dt)
+end
+
+function on_message(self, message_id, message, sender)
+end
+
+function on_input(self, action_id, action)
+end

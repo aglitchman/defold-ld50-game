@@ -1,0 +1,138 @@
+go.property("enabled", true)
+go.property("car_script_url", msg.url("#car_main"))
+
+go.property("my_car_obj_url", msg.url("/civ_car_01/visuals"))
+go.property("my_car_collision_url", msg.url("/civ_car_01/physics#collision"))
+
+go.property("follow_target", false)
+go.property("target_car_obj_url", msg.url("/offroader/visuals"))
+
+-- go.property("key_forward", hash("key_w"))
+-- go.property("key_backward", hash("key_s"))
+go.property("direction_correction", true)
+go.property("keyboard_input", false)
+go.property("key_left", hash("key_a"))
+go.property("key_right", hash("key_d"))
+
+local math3d = require("scene3d.helpers.math3d")
+local render3d = require("scene3d.render.render3d")
+local level_state = require("ld50.scenes.getaway.level_state")
+
+local function process_input(self, dt)
+    local sz = 0
+    local sx = 0
+
+    self.no_input_time = self.no_input_time + dt
+
+    if self.input_key_left then
+        sx = sx - 1
+        self.no_input_time = 0
+    end
+    if self.input_key_right then
+        sx = sx + 1
+        self.no_input_time = 0
+    end
+    -- if self.input_key_forward then
+    --     sz = sz + 1
+    -- end
+    -- if self.input_key_backward then
+    --     sz = sz - 1
+    -- end
+
+    if self.no_input_time > 0.25 and self.direction_correction then
+        local my_pos = go.get_position(self.my_car_obj_url)
+        local target_pos = my_pos + render3d.FORWARD * 10
+
+        local my_yaw = 90 + go.get(self.my_car_obj_url, "euler.y")
+        local angle2 = math.deg(math.atan2(-(target_pos.z - my_pos.z), target_pos.x - my_pos.x))
+        angle2 = angle2 - my_yaw
+        if angle2 <= -180 then
+            angle2 = angle2 + 360
+        end
+
+        sx = (angle2 > 0 and -1 or 1) * math3d.clamp(math.abs(angle2) / 20, 0, 1)
+    end
+
+    go.set(self.car_script_url, "input_steering_wheel_value", sx)
+    -- go.set(self.car_script_url, "input_gas_pedal_value", sz)
+end
+
+function init(self)
+    msg.post("#", hash("init"))
+end
+
+function final(self)
+    level_state.car_count = level_state.car_count - 1
+end
+
+function update(self, dt)
+    if not self.enabled then
+        return
+    end
+
+    if self.follow_target then
+        local target_pos = go.get_position(self.target_car_obj_url)
+        local my_pos = go.get_position(self.my_car_obj_url)
+
+        local my_yaw = 90 + go.get(self.my_car_obj_url, "euler.y")
+
+        target_pos.y = 0
+        my_pos.y = 0
+
+        local angle2 = math.deg(math.atan2(-(target_pos.z - my_pos.z), target_pos.x - my_pos.x))
+        angle2 = angle2 - my_yaw
+        if angle2 <= -180 then
+            angle2 = angle2 + 360
+        end
+
+        -- print(string.format("my yaw %.2f, angle2 %.2f (%.2f %.2f %.2f | %.2f %.2f %.2f)", my_yaw, angle2, target_pos.x, target_pos.y, target_pos.z, my_pos.x, my_pos.y, my_pos.z))
+
+        local sz = 1
+        local sx = (angle2 > 0 and -1 or 1) * math3d.clamp(math.abs(angle2) / 20, 0, 1)
+
+        go.set(self.car_script_url, "input_steering_wheel_value", sx)
+        go.set(self.car_script_url, "input_gas_pedal_value", sz)
+    else
+        go.set(self.car_script_url, "input_gas_pedal_value", 1)
+    end
+
+    if not self.killed then
+        
+    end
+
+    if self.keyboard_input then
+        process_input(self, dt)
+    end
+end
+
+function on_message(self, message_id, message, sender)
+    if message_id == hash("init") then
+        if self.keyboard_input then
+            msg.post(".", "acquire_input_focus")
+        end
+
+        self.no_input_time = 0
+        -- self.dust_accum = 0
+        level_state.car_count = level_state.car_count + 1
+
+        -- print(self.my_car_collision_url)
+        -- physics.set_maskbit(self.my_car_collision_url, hash("ground"), true)
+    end
+end
+
+function on_input(self, action_id, action)
+    if not self.keyboard_input then
+        return
+    end
+
+    if action_id == self.key_forward then
+        self.input_key_forward = not action.released
+    elseif action_id == self.key_backward then
+        self.input_key_backward = not action.released
+    elseif action_id == self.key_left then
+        self.input_key_left = not action.released
+    elseif action_id == self.key_right then
+        self.input_key_right = not action.released
+    end
+end
+

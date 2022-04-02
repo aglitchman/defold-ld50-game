@@ -66,8 +66,8 @@ nodes {
 }
 nodes {
   position {
-    x: 0.0
-    y: -50.0
+    x: 740.0
+    y: -472.0
     z: 0.0
     w: 1.0
   }
@@ -99,8 +99,8 @@ nodes {
   blend_mode: BLEND_MODE_ALPHA
   texture: "main_loading/loading_text"
   id: "text"
-  xanchor: XANCHOR_NONE
-  yanchor: YANCHOR_NONE
+  xanchor: XANCHOR_RIGHT
+  yanchor: YANCHOR_BOTTOM
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
   parent: "cover"

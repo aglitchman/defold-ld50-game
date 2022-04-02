@@ -1,0 +1,80 @@
+go.property("orbit_follow_url", msg.url("#orbit_follow"))
+go.property("factory_car_01_url", msg.url("#civ_car_01"))
+go.property("car_spawn_rate", 0.5)
+go.property("car_spawn_lanes", 3)
+go.property("lane_width", 3)
+go.property("debug_mesh_id", hash("debug_mesh"))
+
+local cars = require("ld50.cars.cars")
+local level_state = require("ld50.scenes.getaway.level_state")
+local render3d = require("scene3d.render.render3d")
+
+local EMPTY_HASH = hash("")
+local DISABLE = hash("disable")
+
+local function follow_object(self, obj_id)
+    go.set(self.orbit_follow_url, "follow_object_id", obj_id)
+end
+
+local function start(self)
+    go.animate(self.orbit_follow_url, "distance", go.PLAYBACK_ONCE_FORWARD, 85, go.EASING_INOUTSINE, 1, 0.05)
+    go.animate(self.orbit_follow_url, "height", go.PLAYBACK_ONCE_FORWARD, 86, go.EASING_INOUTSINE, 1, 0.05)
+
+    local car_main, car_control, hull_obj_id = cars.spawn(self.factory_car_01_url, go.get_position(), vmath.quat())
+    follow_object(self, hull_obj_id)
+
+    self.player_url = hull_obj_id
+
+    go.set(car_control, "keyboard_input", true)
+
+    self.car_spawning = true
+    self.car_spawn_timer = 0
+end
+
+local function car_spawning(self, dt)
+    local player_pos = go.get_position(self.player_url)
+    go.set_position(vmath.vector3(0, 0, player_pos.z) + self.spawn_start_pos, "/spawn_point")
+
+    self.car_spawn_timer = self.car_spawn_timer + dt
+
+    while self.car_spawn_timer > (1 / self.car_spawn_rate) do
+        -- local props = {
+        --     ["velocity"] = math.random(3, 8)
+        -- }
+        -- local x = self.car_spawn_radius * 2 * (math.random() - 0.5) + self.lane_width / 2
+        -- x = math.floor(x / self.lane_width) * self.lane_width - self.lane_width / 2
+        local x = (math.random(1, self.car_spawn_lanes) - 0.5) * self.lane_width - (self.lane_width * self.car_spawn_lanes / 2)
+        print(x)
+        local pos = vmath.vector3(x, 0, 0)
+        local car_main, car_control, hull_obj_id = cars.spawn(self.factory_car_01_url, go.get_position("/spawn_point") + pos, vmath.quat())
+
+        go.set(car_main, "acceleration_const", 8)
+
+        self.car_spawn_timer = self.car_spawn_timer - (1 / self.car_spawn_rate)
+    end
+
+    render3d.debug_log(string.format("Car Num %d", level_state.car_count))
+end
+
+function init(self)
+    if self.debug_mesh_id ~= EMPTY_HASH then
+        msg.post(msg.url(nil, nil, self.debug_mesh_id), DISABLE)
+    end
+
+    self.spawn_start_pos = go.get_position("/spawn_point")
+end
+
+function final(self)
+end
+
+function update(self, dt)
+    if self.car_spawning then
+        car_spawning(self, dt)
+    end
+end
+
+function on_message(self, message_id, message, sender)
+    if message_id == hash("start") then
+        start(self)
+    end
+end
