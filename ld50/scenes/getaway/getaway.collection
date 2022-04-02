@@ -21,6 +21,11 @@ instances {
       type: PROPERTY_TYPE_NUMBER
     }
     properties {
+      id: "near_clip"
+      value: "1.0"
+      type: PROPERTY_TYPE_NUMBER
+    }
+    properties {
       id: "far_clip"
       value: "250.0"
       type: PROPERTY_TYPE_NUMBER
