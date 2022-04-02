@@ -1,0 +1,69 @@
+local M = {}
+
+local function ends_with(str, ending)
+    return ending == "" or str:sub(-#ending) == ending
+end
+
+local function make_command(opts, quality)
+    local path = editor.get(opts.selection, "path")
+    path = path:sub(2)
+
+    local output_path = path:sub(1, -5) .. ".ogg"
+    if ends_with(path, ".ogg") then
+        output_path = path:sub(1, -5) .. "_q3.ogg"
+    end
+
+    if editor.platform == "x86_64-win32" then
+        return {
+            {
+                action = "shell",
+                command = {
+                    "cmd", "/C",
+                    "editor_scripts\\ffmpeg.exe",
+                    "-hide_banner",
+                    "-loglevel", "warning",
+                    "-stats",
+                    "-i", path,
+                    "-c:a", "libvorbis",
+                    "-q:a", tostring(quality),
+                    "-ar", "44100",
+                    "-map_metadata", "-1", -- to strip metadata and save space
+                    "-y", output_path
+                }
+            }
+        }
+    else
+        error("ERROR: Not supported platform")
+    end
+end
+
+function M.get_commands()
+    return {
+        {
+            label = "Convert to Ogg Vorbis (-q:a 3)",
+            locations = {"Edit", "Assets"},
+            query = {selection = {type = "resource", cardinality = "one"}},
+            active = function(opts)
+                local path = editor.get(opts.selection, "path")
+                return ends_with(path, ".wav") or ends_with(path, ".mp3") or ends_with(path, ".ogg")
+            end,
+            run = function(opts)
+                return make_command(opts, 3)
+            end
+        },
+        {
+            label = "Convert to Ogg Vorbis (-q:a 1)",
+            locations = {"Edit", "Assets"},
+            query = {selection = {type = "resource", cardinality = "one"}},
+            active = function(opts)
+                local path = editor.get(opts.selection, "path")
+                return ends_with(path, ".wav") or ends_with(path, ".mp3") or ends_with(path, ".ogg")
+            end,
+            run = function(opts)
+                return make_command(opts, 1)
+            end
+        }
+    }
+end
+
+return M
