@@ -60,6 +60,9 @@
             </div>
         </div>
         <script id="engine-setup" type="text/javascript">
+            // Defold 1.3.0 only
+            EngineLoader.stream_wasm = false;
+
             (function () {
                 var statusText;
                 var setStatus = function (status) {

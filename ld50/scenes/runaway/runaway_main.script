@@ -1,16 +1,23 @@
 local render3d = require("scene3d.render.render3d")
+local level_state = require("ld50.scenes.runaway.level_state")
 
 go.property("acquire_input_focus", true)
 
 function init(self)
-    print("basic_3d_main: init()")
+    print("runaway_main: init()")
 
     if self.acquire_input_focus then
         msg.post(".", hash("acquire_input_focus"))
     end
+
+    level_state.reset()
+
+    -- go.animate("#orbit_follow", "distance", go.PLAYBACK_ONCE_FORWARD, 105, go.EASING_INOUTSINE, 1, 0.05)
+    -- go.animate("#orbit_follow", "height", go.PLAYBACK_ONCE_FORWARD, 106, go.EASING_INOUTSINE, 1, 0.05)
 end
 
 function final(self)
+    print("runaway_main: final()")
 end
 
 function update(self, dt)

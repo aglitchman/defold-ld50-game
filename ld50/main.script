@@ -4,7 +4,7 @@ local render3d = require("scene3d.render.render3d")
 local system_util = require("scene3d.helpers.system_util")
 local main = require("ld50.main")
 
-go.property("scene1", hash("basic_3d"))
+go.property("scene1", hash("runaway"))
 go.property("scene2", hash(""))
 go.property("scene3", hash(""))
 go.property("scene4", hash(""))

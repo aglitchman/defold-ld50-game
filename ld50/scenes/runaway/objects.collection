@@ -1,0 +1,144 @@
+name: "default"
+instances {
+  id: "box_player"
+  prototype: "/ld50/scenes/runaway/box.go"
+  position {
+    x: 0.0
+    y: 0.75
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  component_properties {
+    id: "box"
+    properties {
+      id: "can_merge"
+      value: "true"
+      type: PROPERTY_TYPE_BOOLEAN
+    }
+    properties {
+      id: "velocity"
+      value: "10.0"
+      type: PROPERTY_TYPE_NUMBER
+    }
+    properties {
+      id: "boost"
+      value: "10.0"
+      type: PROPERTY_TYPE_NUMBER
+    }
+    properties {
+      id: "keyboard_input"
+      value: "true"
+      type: PROPERTY_TYPE_BOOLEAN
+    }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "storm_line"
+  prototype: "/ld50/scenes/runaway/storm_line.go"
+  children: "storm_line_sprite"
+  position {
+    x: 0.0
+    y: 0.05
+    z: 8.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "storm_line_sprite"
+  prototype: "/ld50/scenes/runaway/storm_line_sprite.go"
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 0.05
+    y: 0.01
+    z: 0.01
+  }
+}
+scale_along_z: 0
+embedded_instances {
+  id: "box_generator"
+  data: "components {\n"
+  "  id: \"box_generator\"\n"
+  "  component: \"/ld50/scenes/runaway/box_generator.script\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "  properties {\n"
+  "    id: \"player_url\"\n"
+  "    value: \"/objects/box_player\"\n"
+  "    type: PROPERTY_TYPE_URL\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"factory\"\n"
+  "  type: \"factory\"\n"
+  "  data: \"prototype: \\\"/ld50/scenes/runaway/box.go\\\"\\n"
+  "load_dynamically: false\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    x: 0.0
+    y: 0.75
+    z: -20.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
