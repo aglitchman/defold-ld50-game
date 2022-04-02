@@ -10,6 +10,8 @@ go.property("scene3", hash(""))
 go.property("scene4", hash(""))
 go.property("scene5", hash(""))
 
+go.property("resources_url", msg.url("#resources"))
+
 go.property("acquire_input_focus", true)
 
 function init(self)

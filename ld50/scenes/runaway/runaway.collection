@@ -59,6 +59,11 @@ instances {
   component_properties {
     id: "light_directional"
     properties {
+      id: "ambient_color"
+      value: "1.0, 1.0, 1.0"
+      type: PROPERTY_TYPE_VECTOR3
+    }
+    properties {
       id: "ambient_light_intensity"
       value: "0.9"
       type: PROPERTY_TYPE_NUMBER

@@ -1,5 +1,6 @@
 local render3d = require("scene3d.render.render3d")
 local level_state = require("ld50.scenes.runaway.level_state")
+local audio = require("ld50.scripts.audio")
 
 go.property("acquire_input_focus", true)
 
@@ -14,10 +15,14 @@ function init(self)
 
     -- go.animate("#orbit_follow", "distance", go.PLAYBACK_ONCE_FORWARD, 105, go.EASING_INOUTSINE, 1, 0.05)
     -- go.animate("#orbit_follow", "height", go.PLAYBACK_ONCE_FORWARD, 106, go.EASING_INOUTSINE, 1, 0.05)
+
+    audio.play_bgm("music1")
 end
 
 function final(self)
     print("runaway_main: final()")
+
+    audio.stop_bgm("music1")
 end
 
 function update(self, dt)

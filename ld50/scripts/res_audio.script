@@ -1,0 +1,21 @@
+local audio = require("ld50.scripts.audio")
+
+function init(self)
+    audio._init()
+end
+
+function final(self)
+    audio._final()
+end
+
+function update(self, dt)
+    audio._update()
+end
+
+function on_message(self, message_id, message, sender)
+    if message_id == audio.PLAY_SFX then
+        audio._play_sfx(message.id, message.props)
+    elseif message_id == audio.PLAY_BGM then
+        audio._play_bgm(message.id)
+    end
+end
