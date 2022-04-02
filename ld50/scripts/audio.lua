@@ -74,7 +74,7 @@ function M._play_bgm(id)
     end
     M.stop_bgm_gain[id] = nil
 
-    print("play", url)
+    -- print("play", url)
     sound.play(url, { gain = 1 })
 end
 

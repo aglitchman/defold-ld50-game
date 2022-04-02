@@ -1,6 +1,7 @@
 local render3d = require("scene3d.render.render3d")
 local math3d = require("scene3d.helpers.math3d")
 local level_state = require("ld50.scenes.runaway.level_state")
+local fx = require("ld50.fx.scripts.fx")
 
 local PALETTE = {"#f94144","#f8961e","#43aa8b","#277da1"} -- ,"#f3722c","#f9844a","#f9c74f","#90be6d","#4d908e","#577590","#277da1"}
 
@@ -60,6 +61,7 @@ function M.init(self)
     go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD, 1, go.EASING_OUTBACK, 0.5, 0)
 
     self.default_velocity = self.velocity
+    self.dust_accum = 0
 end
 
 function M.final(self)
@@ -101,6 +103,18 @@ function M.update(self, dt)
 
     if self.keyboard_input then
         level_state.car_speed = self.total_speed
+    end
+
+    if not self.killed then
+        self.dust_accum = self.dust_accum + dt
+        local dust_dt = 0.5 / math.abs(self.total_speed)
+        -- if self.keyboard_input then
+        --     render3d.debug_log(string.format("DUST DT %.02f", dust_dt))
+        -- end
+        while self.dust_accum >= dust_dt do
+            fx.road_dust(position + vmath.vector3(0, -0.5, 0))
+            self.dust_accum = self.dust_accum - dust_dt
+        end
     end
 end
 

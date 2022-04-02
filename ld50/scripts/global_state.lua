@@ -3,7 +3,7 @@ local M = {}
 function M.reset()
     -- Settings
     M.sounds = true
-    M.music = true
+    M.music = false
 
     -- Global State
     M.window_focused = true

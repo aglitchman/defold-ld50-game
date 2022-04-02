@@ -4,7 +4,7 @@ instances {
   prototype: "/ld50/scenes/runaway/box.go"
   position {
     x: 0.0
-    y: 0.75
+    y: 0.51
     z: 0.0
   }
   rotation {
@@ -127,7 +127,7 @@ embedded_instances {
   ""
   position {
     x: 0.0
-    y: 0.75
+    y: 0.51
     z: -20.0
   }
   rotation {

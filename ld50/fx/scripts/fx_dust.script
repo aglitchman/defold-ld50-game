@@ -1,0 +1,53 @@
+local render3d = require("scene3d.render.render3d")
+
+function init(self)
+    self.instances = {}
+
+    self.factories = {
+        msg.url("#fx_dust1"),
+        msg.url("#fx_dust2"),
+    }
+end
+
+function final(self)
+    for _, v in ipairs(self.instances) do
+        go.delete(v.obj_id)
+    end
+end
+
+function update(self, dt)
+    local delete_idxs = {}
+    for i, v in ipairs(self.instances) do
+        v.lifetime = v.lifetime - dt
+        if v.lifetime <= 0 then
+            table.insert(delete_idxs, 1, i)
+        end
+    end
+
+    for _, i in ipairs(delete_idxs) do
+        go.delete(self.instances[i].obj_id)
+        table.remove(self.instances, i)
+    end
+
+    render3d.debug_log("Dust Num " .. #self.instances)
+end
+
+function on_message(self, message_id, message, sender)
+    if message_id == hash("road_dust") then
+        local factory_url = self.factories[math.random(1, #self.factories)]
+        local obj_id = factory.create(factory_url, message.position)
+
+        if message.scale then
+            go.set_scale(message.scale, obj_id)
+        end
+
+        local lifetime = 0.35
+        go.animate(obj_id, "scale", go.PLAYBACK_ONCE_FORWARD, 0.0001, go.EASING_INQUAD, lifetime)
+        -- go.animate(obj_id, "position", go.PLAYBACK_ONCE_FORWARD, message.position + vmath.vector3(0, -1, 0), go.EASING_INQUAD, lifetime)
+
+        table.insert(self.instances, {
+            obj_id = obj_id,
+            lifetime = lifetime
+        })
+    end
+end
