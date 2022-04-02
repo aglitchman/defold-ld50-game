@@ -2,8 +2,8 @@ local M = {}
 
 function M.reset()
     -- Settings
-    M.sounds = true
-    M.music = false
+    M.sounds = html5 and true or false
+    M.music = html5 and true or false
 
     -- Global State
     M.window_focused = true

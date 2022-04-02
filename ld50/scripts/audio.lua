@@ -71,6 +71,7 @@ function M._play_bgm(id)
 
     if M.stop_bgm_gain[id] then
         sound.stop(url)
+        sound.set_gain(url, 1)
     end
     M.stop_bgm_gain[id] = nil
 
