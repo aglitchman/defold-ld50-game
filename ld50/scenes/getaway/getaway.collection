@@ -16,6 +16,11 @@ instances {
   component_properties {
     id: "camera3d"
     properties {
+      id: "clear_color"
+      value: "1.0, 0.784, 0.345, 1.0"
+      type: PROPERTY_TYPE_VECTOR4
+    }
+    properties {
       id: "field_of_view"
       value: "10.0"
       type: PROPERTY_TYPE_NUMBER
@@ -130,6 +135,34 @@ instances {
     z: 1.0
   }
 }
+instances {
+  id: "ground_generator"
+  prototype: "/ld50/road/ground_generator.go"
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  component_properties {
+    id: "generator"
+    properties {
+      id: "follow_object"
+      value: "/camera3d"
+      type: PROPERTY_TYPE_HASH
+    }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
 scale_along_z: 1
 embedded_instances {
   id: "main"
@@ -188,64 +221,6 @@ embedded_instances {
   "  id: \"gameover_ui\"\n"
   "  type: \"factory\"\n"
   "  data: \"prototype: \\\"/ld50/scenes/getaway/ui/gameover_ui.go\\\"\\n"
-  "load_dynamically: false\\n"
-  "\"\n"
-  "  position {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "  }\n"
-  "  rotation {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "    w: 1.0\n"
-  "  }\n"
-  "}\n"
-  ""
-  position {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
-}
-embedded_instances {
-  id: "infinite_floor"
-  data: "components {\n"
-  "  id: \"chunked_floor\"\n"
-  "  component: \"/scene3d/scripts/chunked_floor.script\"\n"
-  "  position {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "  }\n"
-  "  rotation {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "    w: 1.0\n"
-  "  }\n"
-  "  properties {\n"
-  "    id: \"follow_object\"\n"
-  "    value: \"/camera3d\"\n"
-  "    type: PROPERTY_TYPE_HASH\n"
-  "  }\n"
-  "}\n"
-  "embedded_components {\n"
-  "  id: \"factory\"\n"
-  "  type: \"factory\"\n"
-  "  data: \"prototype: \\\"/scene3d/prefabs/buildings/buildings_chunked_floor_chunk_10x10.go\\\"\\n"
   "load_dynamically: false\\n"
   "\"\n"
   "  position {\n"

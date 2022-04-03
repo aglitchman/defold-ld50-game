@@ -32,7 +32,7 @@ function update(self, dt)
         table.remove(self.instances, i)
     end
 
-    render3d.debug_log("Dust Num " .. #self.instances)
+    -- render3d.debug_log("Dust Num " .. #self.instances)
 end
 
 function on_message(self, message_id, message, sender)

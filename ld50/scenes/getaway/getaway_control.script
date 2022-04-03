@@ -40,6 +40,7 @@ end
 
 local function follow_object(self, obj_id)
     go.set(self.orbit_follow_url, "follow_object_id", obj_id)
+    go.set("/ground_generator#generator", "follow_object", obj_id)
 end
 
 local function spawn_player(self, position, rotation, exclude_car_color)
@@ -163,7 +164,7 @@ local function car_spawning(self, dt)
         self.car_spawn_timer = self.car_spawn_timer - (1 / self.car_spawn_rate)
     end
 
-    render3d.debug_log(string.format("Car Num %d", level_state.car_count))
+    -- render3d.debug_log(string.format("Car Num %d", level_state.car_count))
 end
 
 local function merge(self, message)
