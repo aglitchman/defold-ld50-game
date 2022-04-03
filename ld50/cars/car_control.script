@@ -9,53 +9,10 @@ go.property("target_car_obj_url", msg.url("/offroader/visuals"))
 
 -- go.property("key_forward", hash("key_w"))
 -- go.property("key_backward", hash("key_s"))
-go.property("direction_correction", true)
-go.property("keyboard_input", false)
-go.property("key_left", hash("key_a"))
-go.property("key_right", hash("key_d"))
 
 local math3d = require("scene3d.helpers.math3d")
 local render3d = require("scene3d.render.render3d")
 local level_state = require("ld50.scenes.getaway.level_state")
-
-local function process_input(self, dt)
-    local sz = 0
-    local sx = 0
-
-    self.no_input_time = self.no_input_time + dt
-
-    if self.input_key_left then
-        sx = sx - 1
-        self.no_input_time = 0
-    end
-    if self.input_key_right then
-        sx = sx + 1
-        self.no_input_time = 0
-    end
-    -- if self.input_key_forward then
-    --     sz = sz + 1
-    -- end
-    -- if self.input_key_backward then
-    --     sz = sz - 1
-    -- end
-
-    if self.no_input_time > 0.25 and self.direction_correction then
-        local my_pos = go.get_position(self.my_car_obj_url)
-        local target_pos = my_pos + render3d.FORWARD * 10
-
-        local my_yaw = 90 + go.get(self.my_car_obj_url, "euler.y")
-        local angle2 = math.deg(math.atan2(-(target_pos.z - my_pos.z), target_pos.x - my_pos.x))
-        angle2 = angle2 - my_yaw
-        if angle2 <= -180 then
-            angle2 = angle2 + 360
-        end
-
-        sx = (angle2 > 0 and -1 or 1) * math3d.clamp(math.abs(angle2) / 20, 0, 1)
-    end
-
-    go.set(self.car_script_url, "input_steering_wheel_value", sx)
-    -- go.set(self.car_script_url, "input_gas_pedal_value", sz)
-end
 
 function init(self)
     msg.post("#", hash("init"))
@@ -100,9 +57,9 @@ function update(self, dt)
         
     end
 
-    if self.keyboard_input then
-        process_input(self, dt)
-    end
+    -- if self.keyboard_input then
+    --     process_input(self, dt)
+    -- end
 end
 
 function on_message(self, message_id, message, sender)

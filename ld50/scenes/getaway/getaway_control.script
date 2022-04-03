@@ -2,8 +2,14 @@ go.property("orbit_follow_url", msg.url("#orbit_follow"))
 go.property("factory_car_01_url", msg.url("#civ_car_01"))
 go.property("car_spawn_rate", 0.5)
 go.property("car_spawn_lanes", 3)
-go.property("lane_width", 3)
+go.property("lane_width", 3.6)
 go.property("debug_mesh_id", hash("debug_mesh"))
+
+-- ACCELERATION:
+-- 8 = 15.41
+-- 10 = 19.26
+-- 12 = 23.12
+-- ---> 1.9266
 
 local cars = require("ld50.cars.cars")
 local level_state = require("ld50.scenes.getaway.level_state")
@@ -20,12 +26,12 @@ local function start(self)
     go.animate(self.orbit_follow_url, "distance", go.PLAYBACK_ONCE_FORWARD, 85, go.EASING_INOUTSINE, 1, 0.05)
     go.animate(self.orbit_follow_url, "height", go.PLAYBACK_ONCE_FORWARD, 86, go.EASING_INOUTSINE, 1, 0.05)
 
-    local car_main, car_control, hull_obj_id = cars.spawn(self.factory_car_01_url, go.get_position(), vmath.quat())
+    local car_main, hull_obj_id = cars.spawn(self.factory_car_01_url, go.get_position(), vmath.quat())
     follow_object(self, hull_obj_id)
 
     self.player_url = hull_obj_id
 
-    go.set(car_control, "keyboard_input", true)
+    go.set(car_main, "keyboard_input", true)
 
     self.car_spawning = true
     self.car_spawn_timer = 0
@@ -44,11 +50,14 @@ local function car_spawning(self, dt)
         -- local x = self.car_spawn_radius * 2 * (math.random() - 0.5) + self.lane_width / 2
         -- x = math.floor(x / self.lane_width) * self.lane_width - self.lane_width / 2
         local x = (math.random(1, self.car_spawn_lanes) - 0.5) * self.lane_width - (self.lane_width * self.car_spawn_lanes / 2)
-        print(x)
         local pos = vmath.vector3(x, 0, 0)
-        local car_main, car_control, hull_obj_id = cars.spawn(self.factory_car_01_url, go.get_position("/spawn_point") + pos, vmath.quat())
+        local car_main, hull_obj_id = cars.spawn(self.factory_car_01_url, go.get_position("/spawn_point") + pos, vmath.quat())
 
-        go.set(car_main, "acceleration_const", 8)
+        local accel_const = math.random() * 4 + 7
+        go.set(car_main, "acceleration_const", accel_const)
+        go.set(car_main, "start_velocity", vmath.vector3(0, 0, -accel_const * 1.9266))
+
+        print(x, "accel_const", accel_const)
 
         self.car_spawn_timer = self.car_spawn_timer - (1 / self.car_spawn_rate)
     end
