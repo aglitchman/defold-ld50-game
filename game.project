@@ -29,9 +29,10 @@ dependencies#5 = https://github.com/subsoap/defos/archive/refs/tags/v.2.7.0.zip
 game_binding = /builtins/input/all.input_bindingc
 
 [html5]
-heap_size = 64
+heap_size = 128
 cssfile = /builtins/manifests/web/dark_theme.css
 scale_mode = stretch
+splash_image = /ld50_html5/cover.png
 
 [render]
 clear_color_alpha = 1.0
