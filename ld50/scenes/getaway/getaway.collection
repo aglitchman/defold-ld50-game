@@ -3,15 +3,15 @@ instances {
   id: "camera3d"
   prototype: "/scene3d/camera/camera3d.go"
   position {
-    x: -0.269
-    y: 10.570332
-    z: 10.883265
+    x: 15.006116
+    y: 1.334338
+    z: -18.886732
   }
   rotation {
-    x: -0.40577975
-    y: 0.0
-    z: 0.0
-    w: 0.9139709
+    x: -0.009330428
+    y: 0.4539656
+    z: 0.0047540907
+    w: 0.89095765
   }
   component_properties {
     id: "camera3d"
@@ -291,6 +291,11 @@ embedded_instances {
   "    w: 1.0\n"
   "  }\n"
   "  properties {\n"
+  "    id: \"enabled\"\n"
+  "    value: \"true\"\n"
+  "    type: PROPERTY_TYPE_BOOLEAN\n"
+  "  }\n"
+  "  properties {\n"
   "    id: \"camera_object_id\"\n"
   "    value: \"/camera3d\"\n"
   "    type: PROPERTY_TYPE_HASH\n"
@@ -348,9 +353,45 @@ embedded_instances {
   "  }\n"
   "}\n"
   "embedded_components {\n"
-  "  id: \"civ_car_01\"\n"
+  "  id: \"factory_car_01\"\n"
   "  type: \"collectionfactory\"\n"
-  "  data: \"prototype: \\\"/ld50/cars/civ_car_01.collection\\\"\\n"
+  "  data: \"prototype: \\\"/ld50/cars/cartoon_car_01.collection\\\"\\n"
+  "load_dynamically: false\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"factory_car_02\"\n"
+  "  type: \"collectionfactory\"\n"
+  "  data: \"prototype: \\\"/ld50/cars/cartoon_car_02.collection\\\"\\n"
+  "load_dynamically: false\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"factory_car_03\"\n"
+  "  type: \"collectionfactory\"\n"
+  "  data: \"prototype: \\\"/ld50/cars/cartoon_car_03.collection\\\"\\n"
   "load_dynamically: false\\n"
   "\"\n"
   "  position {\n"
@@ -385,6 +426,7 @@ embedded_instances {
 }
 embedded_instances {
   id: "spawn_point"
+  children: "kill_zone"
   data: "embedded_components {\n"
   "  id: \"debug_mesh\"\n"
   "  type: \"mesh\"\n"
@@ -479,6 +521,74 @@ embedded_instances {
     x: -12.0
     y: 0.0
     z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+embedded_instances {
+  id: "kill_zone"
+  data: "embedded_components {\n"
+  "  id: \"trigger\"\n"
+  "  type: \"collisionobject\"\n"
+  "  data: \"collision_shape: \\\"\\\"\\n"
+  "type: COLLISION_OBJECT_TYPE_TRIGGER\\n"
+  "mass: 0.0\\n"
+  "friction: 0.1\\n"
+  "restitution: 0.5\\n"
+  "group: \\\"kill_zone\\\"\\n"
+  "mask: \\\"default\\\"\\n"
+  "embedded_collision_shape {\\n"
+  "  shapes {\\n"
+  "    shape_type: TYPE_BOX\\n"
+  "    position {\\n"
+  "      x: 0.0\\n"
+  "      y: 0.0\\n"
+  "      z: 0.0\\n"
+  "    }\\n"
+  "    rotation {\\n"
+  "      x: 0.0\\n"
+  "      y: 0.0\\n"
+  "      z: 0.0\\n"
+  "      w: 1.0\\n"
+  "    }\\n"
+  "    index: 0\\n"
+  "    count: 3\\n"
+  "  }\\n"
+  "  data: 50.0\\n"
+  "  data: 1.5\\n"
+  "  data: 0.5\\n"
+  "}\\n"
+  "linear_damping: 0.0\\n"
+  "angular_damping: 0.0\\n"
+  "locked_rotation: false\\n"
+  "bullet: false\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    x: 0.0
+    y: 0.0
+    z: 80.0
   }
   rotation {
     x: 0.0

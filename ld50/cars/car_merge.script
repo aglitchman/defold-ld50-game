@@ -2,6 +2,7 @@ go.property("car_main_script", msg.url())
 
 local TRIGGER_RESPONSE = hash("trigger_response")
 local MERGE = hash("merge")
+local KILL_ZONE = hash("kill_zone")
 
 function init(self)
 end
@@ -11,10 +12,14 @@ end
 
 function on_message(self, message_id, message, sender)
     if message_id == TRIGGER_RESPONSE then
-        if message.group ~= MERGE then
+        if not message.enter then
             return
         end
 
-        msg.post(self.car_main_script, "merge_request", message)
+        if message.group == MERGE then
+            msg.post(self.car_main_script, "merge_request", message)
+        elseif message.other_group == KILL_ZONE then
+            msg.post(self.car_main_script, "kill_zone", message)
+        end
     end
 end

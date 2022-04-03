@@ -1,7 +1,11 @@
-script: "/ld50/scenes/runaway/runaway_ui.gui_script"
+script: "/ld50/scenes/getaway/getaway_ui.gui_script"
 fonts {
-  name: "debug_font"
-  font: "/scene3d/assets/debug_font.font"
+  name: "font"
+  font: "/ld50/assets/font.font"
+}
+fonts {
+  name: "font_italic"
+  font: "/ld50/assets/font_italic.font"
 }
 textures {
   name: "ui"
@@ -27,14 +31,14 @@ nodes {
     w: 1.0
   }
   scale {
-    x: 1.5
-    y: 1.5
+    x: 1.0
+    y: 1.0
     z: 2.0
     w: 1.0
   }
   size {
     x: 200.0
-    y: 64.0
+    y: 100.0
     z: 0.0
     w: 1.0
   }
@@ -47,7 +51,7 @@ nodes {
   type: TYPE_TEXT
   blend_mode: BLEND_MODE_ALPHA
   text: "999"
-  font: "debug_font"
+  font: "font_italic"
   id: "speed_text"
   xanchor: XANCHOR_RIGHT
   yanchor: YANCHOR_BOTTOM
@@ -79,7 +83,7 @@ nodes {
 nodes {
   position {
     x: -3.5
-    y: 60.0
+    y: 106.733
     z: 0.0
     w: 1.0
   }
@@ -90,14 +94,14 @@ nodes {
     w: 1.0
   }
   scale {
-    x: 0.5
-    y: 0.5
+    x: 1.0
+    y: 1.0
     z: 2.0
     w: 1.0
   }
   size {
-    x: 200.0
-    y: 64.0
+    x: 300.0
+    y: 100.0
     z: 0.0
     w: 1.0
   }
@@ -110,7 +114,7 @@ nodes {
   type: TYPE_TEXT
   blend_mode: BLEND_MODE_ALPHA
   text: "km/h"
-  font: "debug_font"
+  font: "font"
   id: "speed_kmh_text"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
@@ -154,8 +158,8 @@ nodes {
     w: 1.0
   }
   scale {
-    x: 2.0
-    y: 2.0
+    x: 1.2
+    y: 1.2
     z: 1.0
     w: 1.0
   }
@@ -174,7 +178,7 @@ nodes {
   type: TYPE_TEXT
   blend_mode: BLEND_MODE_ALPHA
   text: "000"
-  font: "debug_font"
+  font: "font_italic"
   id: "score_text"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_TOP

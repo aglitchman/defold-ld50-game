@@ -26,6 +26,8 @@ go.property("car_visuals_wheel3_id", hash("/civ_car_01/visuals_wheel_rl"))
 go.property("car_visuals_wheel4_id", hash("/civ_car_01/visuals_wheel_rr"))
 go.property("car_visuals_wheel_mesh_id", hash("mesh"))
 
+go.property("is_player", false)
+go.property("getaway_car_color", 1)
 go.property("getaway_control_script", msg.url())
 go.property("direction_correction", true)
 go.property("direction_target", vmath.vector3(0, 0, -10))
@@ -35,7 +37,7 @@ go.property("key_left", hash("key_a"))
 go.property("key_right", hash("key_d"))
 go.property("can_merge", false)
 
-go.property("input_gas_pedal_value", 1)
+go.property("input_gas_pedal_value", 0)
 go.property("input_steering_wheel_value", 0)
 
 go.property("frustum_cull_enabled", true)
@@ -132,7 +134,9 @@ local function process_input(self, dt)
         sx = correct_direction(self)
     end
 
-    self.input_steering_wheel_value = sx
+    if math.abs(self.input_gas_pedal_value) > 0 then
+        self.input_steering_wheel_value = sx
+    end
     -- self.input_gas_pedal_value = sz
 end
 
@@ -162,6 +166,7 @@ local function handle_kill(self)
     self.killed = true
 
     physics.set_maskbit(self.chassis_url, hash("killed_car"), true)
+    physics.set_maskbit(self.chassis_url, hash("kill_zone"), false)
     physics.set_maskbit(self.chassis_url, physics.get_group(self.chassis_url), false)
     physics.set_group(self.chassis_url, hash("killed_car"))
 
@@ -314,6 +319,10 @@ function update(self, dt)
     local local_velocity = vmath.rotate(math3d.quat_inv(c.car_rotation), c.car_velocity)
     c.car_speed = -local_velocity.z
 
+    if self.is_player then
+        level_state.car_speed = c.car_speed
+    end
+
     local acceleration_const = self.acceleration_const * c.car_mass
     local turn_speed1 = self.turn_speed1 * c.car_mass
     local turn_speed2 = self.turn_speed2 * c.car_mass
@@ -435,6 +444,12 @@ function on_message(self, message_id, message, sender)
 
         handle_merge(self, message)
     elseif message_id == hash("kill") then
+        if self.killed then
+            return
+        end
+
+        handle_kill(self)
+    elseif message_id == hash("kill_zone") then
         if self.killed then
             return
         end
