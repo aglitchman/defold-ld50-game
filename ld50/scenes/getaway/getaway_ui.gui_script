@@ -9,6 +9,7 @@ end
 
 function init(self)
     init_node(self, "speed_text")
+    init_node(self, "score_text")
 
     self.speed_update = 1
 end
@@ -22,6 +23,17 @@ function update(self, dt)
         gui.set_text(self.speed_text, string.format("%d", level_state.car_speed * 3.6))
         self.speed_update = 0
     end
+
+    local score = level_state.calc_score()
+    if score ~= self.score then
+        gui.cancel_animation(self.score_text, "scale")
+        gui.set_scale(self.score_text, vmath.vector3(2.2))
+        gui.animate(self.score_text, "scale", vmath.vector3(1.4), gui.EASING_OUTBACK, 0.25)
+    end
+    self.score = score
+    gui.set_text(self.score_text, string.format("%d", score))
+
+    gui.set_enabled(self.score_text, score > 0)
 end
 
 function on_message(self, message_id, message, sender)

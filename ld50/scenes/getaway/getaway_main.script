@@ -4,10 +4,13 @@ local render3d = require("scene3d.render.render3d")
 
 go.property("acquire_input_focus", true)
 go.property("control_script", msg.url("/start_point#getaway_control"))
-go.property("key_left", hash("key_a"))
-go.property("key_right", hash("key_d"))
+go.property("key_left1", hash("key_a"))
+go.property("key_right1", hash("key_d"))
 go.property("key_left2", hash("key_left"))
 go.property("key_right2", hash("key_right"))
+go.property("key_start1", hash("key_w"))
+go.property("key_start2", hash("key_space"))
+go.property("key_start3", hash("key_enter"))
 
 function init(self)
     print("getaway_main: init()")
@@ -44,13 +47,19 @@ local function start(self)
 end
 
 function on_input(self, action_id, action)
-    if action_id == self.key_left and action.pressed then
+    if action_id == self.key_left1 and action.pressed then
         start(self)
-    elseif action_id == self.key_right and action.pressed then
+    elseif action_id == self.key_right1 and action.pressed then
         start(self)
     elseif action_id == self.key_left2 and action.pressed then
         start(self)
     elseif action_id == self.key_right2 and action.pressed then
+        start(self)
+    elseif action_id == self.key_start1 and action.pressed then
+        start(self)
+    elseif action_id == self.key_start2 and action.pressed then
+        start(self)
+    elseif action_id == self.key_start3 and action.pressed then
         start(self)
     end
 end

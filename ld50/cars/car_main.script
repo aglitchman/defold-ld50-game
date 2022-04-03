@@ -6,7 +6,7 @@ go.property("turn_speed2", 10)
 -- 250: DRIFT
 -- 1000: RACE CAR
 go.property("traction_const", 500)
-go.property("acceleration_apply_point", vmath.vector3(0, -0.3, -2.1))
+go.property("acceleration_apply_point", vmath.vector3(0, -0.3, -1.8))
 
 go.property("async_init", true)
 go.property("debug_draw", false)
@@ -197,6 +197,7 @@ local function init_car(self)
 
     self.car_data = {
         car_mass = go.get(self.chassis_url, "mass"),
+        car_first_frame = true,
         car_position = vmath.vector3(0),
         car_rotation = vmath.vector4(),
         car_euler = vmath.vector3(),
@@ -269,12 +270,21 @@ function update(self, dt)
     local car_position = go.get_position(self.physics_url)
     c.car_position = car_position
     c.car_visual_position = car_position -- vmath.lerp(dt * 30, c.car_visual_position, car_position)
-    if vmath.length(car_position - prev_position) < 0.02 then
+    if c.car_first_frame then
+        prev_position = car_position
+        c.car_previous_position = prev_position
+    end
+    c.car_distance = vmath.length(car_position - prev_position)
+    if vmath.length(car_position - prev_position) < 0.01 then
         prev_position = c.car_previous_position
     else
         c.car_previous_position = prev_position
     end
     c.car_direction = vmath.normalize(car_position - prev_position)
+
+    if self.is_player then
+        level_state.car_distance = level_state.car_distance + c.car_distance
+    end
 
     local car_rotation = go.get_rotation(self.physics_url)
     c.car_rotation = car_rotation
@@ -372,17 +382,7 @@ function update(self, dt)
         self.dust_accum = self.dust_accum + dt
         local dust_dt = 0.4 / cur_speed
         while self.dust_accum >= dust_dt do
-            -- local wheel_pos_rl = go.get_world_position(self.wheel_visual_url[3])
-            -- local wheel_pos_rr = go.get_world_position(self.wheel_visual_url[4])
-            -- fx.road_dust(wheel_pos_rl + vmath.rotate(c.car_rotation, vmath.vector3(0.1, -0.5, 0.1)))
-            -- fx.road_dust(wheel_pos_rr + vmath.rotate(c.car_rotation, vmath.vector3(-0.1, -0.5, 0.1)))
-
-            -- fx.road_dust(c.car_position + vmath.rotate(c.car_rotation, vmath.vector3(-0.5, -0.5, 2.1)))
-            -- fx.road_dust(c.car_position + vmath.rotate(c.car_rotation, vmath.vector3(0.5, -0.5, 2.1)))
-
-            -- if cur_speed > 3 then
-                fx.road_dust(c.car_position + vmath.rotate(c.car_rotation, vmath.vector3((math.random() - 0.5) * 1.2, -0.5, -0.8)))
-            -- end
+            fx.road_dust(c.car_position + vmath.rotate(c.car_rotation, vmath.vector3((math.random() - 0.5) * 1.2, -0.5, -0.8)))
             self.dust_accum = self.dust_accum - dust_dt
         end
     else
@@ -423,6 +423,8 @@ function update(self, dt)
     if self.debug_info then
         render3d.debug_log("Car speed " .. string.format("%.02f m/s, %.0f KMH", math.abs(c.car_speed), math.abs(c.car_speed) * 3.6))
     end
+
+    c.car_first_frame = false
 
     --
     -- FRUSTUM CULL

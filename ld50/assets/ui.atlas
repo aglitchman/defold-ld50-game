@@ -1,7 +1,3 @@
-images {
-  image: "/ld50/assets/ui/storm_line.png"
-  sprite_trim_mode: SPRITE_TRIM_MODE_OFF
-}
 margin: 4
 extrude_borders: 0
 inner_padding: 0
