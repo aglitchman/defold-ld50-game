@@ -49,13 +49,16 @@ local function car_spawning(self, dt)
         -- }
         -- local x = self.car_spawn_radius * 2 * (math.random() - 0.5) + self.lane_width / 2
         -- x = math.floor(x / self.lane_width) * self.lane_width - self.lane_width / 2
-        local x = (math.random(1, self.car_spawn_lanes) - 0.5) * self.lane_width - (self.lane_width * self.car_spawn_lanes / 2)
+        local spawn_lane = math.random(1, self.car_spawn_lanes)
+        -- spawn_lane = 1
+        local x = (spawn_lane - 0.5) * self.lane_width - (self.lane_width * self.car_spawn_lanes / 2)
         local pos = vmath.vector3(x, 0, 0)
         local car_main, hull_obj_id = cars.spawn(self.factory_car_01_url, go.get_position("/spawn_point") + pos, vmath.quat())
 
         local accel_const = math.random() * 4 + 7
         go.set(car_main, "acceleration_const", accel_const)
         go.set(car_main, "start_velocity", vmath.vector3(0, 0, -accel_const * 1.9266))
+        go.set(car_main, "adaptive_cruise_control", true)
 
         print(x, "accel_const", accel_const)
 

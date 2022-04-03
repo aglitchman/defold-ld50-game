@@ -28,11 +28,12 @@ go.property("car_visuals_wheel_mesh_id", hash("mesh"))
 
 go.property("direction_correction", true)
 go.property("direction_target", vmath.vector3(0, 0, -10))
+go.property("adaptive_cruise_control", false)
 go.property("keyboard_input", false)
 go.property("key_left", hash("key_a"))
 go.property("key_right", hash("key_d"))
 
-go.property("input_gas_pedal_value", 0)
+go.property("input_gas_pedal_value", 1)
 go.property("input_steering_wheel_value", 0)
 
 go.property("frustum_cull_enabled", true)
@@ -83,6 +84,24 @@ local function apply_torque(collisionobject_url, force)
     msg.post(collisionobject_url, APPLY_FORCE, { force = vmath.rotate(rotation, -force), position = world_position + vmath.rotate(rotation, vmath.vector3(offset, 0, -offset)) })
 end
 
+local function correct_direction(self)
+    local c = self.car_data
+
+    local target_pos = c.car_position + self.direction_target
+
+    local car_yaw = 90 + math3d.euler_y(c.car_rotation)
+    local target_yaw = math.deg(math.atan2(-(target_pos.z - c.car_position.z), target_pos.x - c.car_position.x))
+    target_yaw = target_yaw - car_yaw
+    if target_yaw <= -180 then
+        target_yaw = target_yaw + 360
+    end
+
+    local sz = 1
+    local sx = (target_yaw > 0 and -1 or 1) * math3d.clamp(math.abs(target_yaw) / 20, 0, 1)
+
+    return sx
+end
+
 local function process_input(self, dt)
     local c = self.car_data
 
@@ -107,20 +126,11 @@ local function process_input(self, dt)
     -- end
 
     if self.no_input_time > 0.25 and self.direction_correction then
-        local target_pos = c.car_position + self.direction_target
-
-        local car_yaw = 90 + math3d.euler_y(c.car_rotation)
-        local target_yaw = math.deg(math.atan2(-(target_pos.z - c.car_position.z), target_pos.x - c.car_position.x))
-        target_yaw = target_yaw - car_yaw
-        if target_yaw <= -180 then
-            target_yaw = target_yaw + 360
-        end
-
-        sx = (target_yaw > 0 and -1 or 1) * math3d.clamp(math.abs(target_yaw) / 20, 0, 1)
+        sx = correct_direction(self)
     end
 
     self.input_steering_wheel_value = sx
-    -- go.set(self.car_script_url, "input_gas_pedal_value", sz)
+    -- self.input_gas_pedal_value = sz
 end
 
 local function init_car(self)
@@ -223,10 +233,26 @@ function update(self, dt)
     --
     if self.keyboard_input then
         process_input(self, dt)
+    else
+        if self.direction_correction then
+            self.input_steering_wheel_value = correct_direction(self)
+        end
     end
 
     local sz = math3d.clamp(self.input_gas_pedal_value, -1, 1)
     local sx = math3d.clamp(self.input_steering_wheel_value, -1, 1)
+
+    if self.adaptive_cruise_control then
+        local CLOSEST = { all = false }
+        local raycast_groups = { hash("default") }
+        local forward_dir = vmath.rotate(c.car_rotation, render3d.FORWARD) * 4
+        local results = physics.raycast(c.car_position, c.car_position + forward_dir, raycast_groups, CLOSEST)
+        if results ~= nil then
+            for _, result in ipairs(results) do
+                sz = 0
+            end
+        end
+    end
 
     --
     -- CAR PHYSICS
