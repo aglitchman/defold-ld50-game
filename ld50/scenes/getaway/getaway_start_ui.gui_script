@@ -1,0 +1,49 @@
+local level_state = require("ld50.scenes.getaway.level_state")
+local xgui = require("ld50.scripts.xgui")
+
+local function init_node(self, name, alpha)
+    self[name] = gui.get_node(name)
+    if alpha then
+        gui.set_alpha(self[name], alpha)
+    end
+end
+
+function init(self)
+    xgui.init_node(self, "title_text1", 0)
+    xgui.init_node(self, "title_text2", 0)
+    xgui.init_node(self, "credits_text", 0)
+
+    local y1 = xgui.get_y(self.title_text1)
+    xgui.set_y(self.title_text1, y1 - 200)
+    gui.animate(self.title_text1, "position.y", y1, gui.EASING_OUTBACK, 0.5)
+    xgui.anim_alpha(self.title_text1, 1, 0.5)
+
+    local y2 = xgui.get_y(self.title_text2)
+    xgui.set_y(self.title_text2, y2 - 200)
+    gui.animate(self.title_text2, "position.y", y2, gui.EASING_OUTBACK, 0.5)
+    xgui.anim_alpha(self.title_text2, 1, 0.5)
+
+    xgui.anim_alpha(self.credits_text, 1, 0.5, 0.5)
+end
+
+function final(self)
+end
+
+function update(self, dt)
+end
+
+function on_message(self, message_id, message, sender)
+    if message_id == hash("hide") then
+        if self.hiding then
+            return
+        end
+        self.hiding = true
+
+        xgui.anim_alpha(self.title_text1, 0, 0.25, 0)
+        xgui.anim_alpha(self.title_text2, 0, 0.25, 0, function (self)
+            msg.post("#delete_go", "delete_go")
+        end)
+        xgui.anim_alpha(self.credits_text, 1, 0.25, 0)
+    end
+end
+

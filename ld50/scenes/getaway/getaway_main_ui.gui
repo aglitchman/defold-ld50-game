@@ -1,4 +1,4 @@
-script: "/ld50/scenes/getaway/getaway_ui.gui_script"
+script: "/ld50/scenes/getaway/getaway_main_ui.gui_script"
 fonts {
   name: "font"
   font: "/ld50/assets/font.font"
