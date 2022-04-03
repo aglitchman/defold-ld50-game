@@ -285,7 +285,7 @@ embedded_instances {
   "  }\n"
   "  properties {\n"
   "    id: \"getaway_car_color\"\n"
-  "    value: \"4.0\"\n"
+  "    value: \"999.0\"\n"
   "    type: PROPERTY_TYPE_NUMBER\n"
   "  }\n"
   "}\n"

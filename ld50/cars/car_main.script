@@ -41,6 +41,8 @@ go.property("adaptive_cruise_control", false)
 go.property("keyboard_input", false)
 go.property("key_left", hash("key_a"))
 go.property("key_right", hash("key_d"))
+go.property("key_left2", hash("key_left"))
+go.property("key_right2", hash("key_right"))
 go.property("can_merge", false)
 
 go.property("input_gas_pedal_value", 0)
@@ -125,11 +127,11 @@ local function process_input(self, dt)
 
     self.no_input_time = self.no_input_time + dt
 
-    if self.input_key_left then
+    if self.input_key_left or self.input_key_left2 then
         sx = sx - 1
         self.no_input_time = 0
     end
-    if self.input_key_right then
+    if self.input_key_right or self.input_key_right2 then
         sx = sx + 1
         self.no_input_time = 0
     end
@@ -362,10 +364,11 @@ function update(self, dt)
     c.car_speed = -local_velocity.z
 
     if self.is_player then
-        level_state.car_speed = c.car_speed
-
         self.acceleration_boost = math3d.lerp(0.5, self.acceleration_boost, 0, dt)
         render3d.debug_log(string.format("BOOST %.03f", self.acceleration_boost))
+
+        level_state.car_speed = c.car_speed
+        level_state.car_boost = self.acceleration_boost
     end
 
     local acceleration_const = (self.acceleration_const + self.acceleration_boost) * c.car_mass
@@ -512,5 +515,9 @@ function on_input(self, action_id, action)
         self.input_key_left = not action.released
     elseif action_id == self.key_right then
         self.input_key_right = not action.released
+    elseif action_id == self.key_left2 then
+        self.input_key_left2 = not action.released
+    elseif action_id == self.key_right2 then
+        self.input_key_right2 = not action.released
     end
 end

@@ -1,4 +1,4 @@
-script: "/ld50/scenes/getaway/getaway_main_ui.gui_script"
+script: "/ld50/scenes/getaway/ui/main_ui.gui_script"
 fonts {
   name: "font"
   font: "/ld50/assets/font.font"
@@ -209,4 +209,4 @@ nodes {
 }
 material: "/builtins/materials/gui.material"
 adjust_reference: ADJUST_REFERENCE_PARENT
-max_nodes: 512
+max_nodes: 100

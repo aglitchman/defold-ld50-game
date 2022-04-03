@@ -130,26 +130,6 @@ instances {
     z: 1.0
   }
 }
-collection_instances {
-  id: "debug_ui"
-  collection: "/scene3d/debug/photo_mode/debug_ui.collection"
-  position {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
-}
 scale_along_z: 1
 embedded_instances {
   id: "main"
@@ -171,7 +151,7 @@ embedded_instances {
   "embedded_components {\n"
   "  id: \"start_ui\"\n"
   "  type: \"factory\"\n"
-  "  data: \"prototype: \\\"/ld50/scenes/getaway/getaway_start_ui.go\\\"\\n"
+  "  data: \"prototype: \\\"/ld50/scenes/getaway/ui/start_ui.go\\\"\\n"
   "load_dynamically: false\\n"
   "\"\n"
   "  position {\n"
@@ -189,7 +169,25 @@ embedded_instances {
   "embedded_components {\n"
   "  id: \"main_ui\"\n"
   "  type: \"factory\"\n"
-  "  data: \"prototype: \\\"/ld50/scenes/getaway/getaway_main_ui.go\\\"\\n"
+  "  data: \"prototype: \\\"/ld50/scenes/getaway/ui/main_ui.go\\\"\\n"
+  "load_dynamically: false\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"gameover_ui\"\n"
+  "  type: \"factory\"\n"
+  "  data: \"prototype: \\\"/ld50/scenes/getaway/ui/gameover_ui.go\\\"\\n"
   "load_dynamically: false\\n"
   "\"\n"
   "  position {\n"
@@ -666,7 +664,7 @@ embedded_instances {
   position {
     x: 0.0
     y: 0.0
-    z: 10.0
+    z: 30.0
   }
   rotation {
     x: 0.0

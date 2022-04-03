@@ -1,0 +1,88 @@
+local level_state = require("ld50.scenes.getaway.level_state")
+local xgui = require("ld50.scripts.xgui")
+local math3d = require("scene3d.helpers.math3d")
+
+local function wait_for_keys(self)
+    msg.post(".", "acquire_input_focus")
+end
+
+local function start_counting(self)
+    self.counter_on = true
+    self.cur_score = 0
+    self.final_score = level_state.calc_score()
+    gui.set_text(self.score_text, "")
+    xgui.set_alpha(self.score_text, 1)
+end
+
+local function restart(self)
+    if self.restarting then
+        return
+    end
+    self.restarting = true
+
+    msg.post("main:/main#main", "reload_scene")
+end
+
+function init(self)
+    xgui.init_node(self, "cover", 0)
+    xgui.init_node(self, "busted_text", 0)
+    xgui.init_node(self, "final_score_text", 0)
+    xgui.init_node(self, "score_text", 0)
+    xgui.init_node(self, "press_any_to_restart_text", 0)
+
+    xgui.anim_alpha(self.cover, 0.25, 0.25)
+
+    xgui.set_scale(self.busted_text, 4)
+    gui.animate(self.busted_text, "scale", 2, gui.EASING_OUTBOUNCE, 0.75)
+    xgui.anim_alpha(self.busted_text, 1, 0.5)
+    local y = xgui.get_y(self.busted_text)
+    gui.animate(self.busted_text, "position.y", y + 100, gui.EASING_OUTQUAD, 0.5, 0.75)
+
+    xgui.anim_alpha(self.final_score_text, 1, 0.5, 1.25, start_counting)
+end
+
+function final(self)
+end
+
+function update(self, dt)
+    if self.counter_on then
+        self.cur_score = math3d.lerp(0.6, self.cur_score, self.final_score, dt)
+        if self.cur_score >= self.final_score * 0.98 then
+            self.cur_score = self.final_score
+            self.counter_on = false
+            xgui.anim_alpha(self.press_any_to_restart_text, 1, 0.5, 0, wait_for_keys)
+
+            xgui.set_scale(self.score_text, 3)
+            gui.animate(self.score_text, "scale", 2, gui.EASING_OUTBOUNCE, 0.5)
+        end
+
+        gui.set_text(self.score_text, string.format("%d", self.cur_score))
+    end
+end
+
+function on_message(self, message_id, message, sender)
+    if message_id == hash("hide") then
+        if self.hiding then
+            return
+        end
+        self.hiding = true
+
+        for i, n in ipairs(self.all_nodes) do
+            local callback
+            if i == #self.all_nodes then
+                callback = function (self)
+                    msg.post("#delete_go", "delete_go")
+                end
+            end
+            xgui.anim_alpha(n, 0, 0.25, 0, callback)
+        end
+    end
+end
+
+function on_input(self, action_id, action)
+    if action_id and action.released then
+        restart(self)
+    end
+end
+
+

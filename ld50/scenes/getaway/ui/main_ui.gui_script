@@ -19,7 +19,7 @@ end
 
 function update(self, dt)
     self.speed_update = self.speed_update + dt
-    if self.speed_update > 0.333 then
+    if self.speed_update > 0.2 then
         gui.set_text(self.speed_text, string.format("%d", level_state.car_speed * 5))
         self.speed_update = 0
     end
@@ -37,4 +37,21 @@ function update(self, dt)
 end
 
 function on_message(self, message_id, message, sender)
+    if message_id == hash("hide") then
+        if self.hiding then
+            return
+        end
+        self.hiding = true
+
+        for i, n in ipairs(self.all_nodes) do
+            local callback
+            if i == #self.all_nodes then
+                callback = function (self)
+                    msg.post("#delete_go", "delete_go")
+                end
+            end
+            xgui.anim_alpha(n, 0, 0.25, 0, callback)
+        end
+    end
 end
+

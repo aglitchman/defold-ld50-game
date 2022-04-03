@@ -1,8 +1,6 @@
-# LD50 Template
+# LD50: Work-in-progress game
 
-This project was created from the "example" project from Scene3D, https://github.com/indiesoftby/defold-scene3d.
-
-Currently, it contains only the basic setup of 3D game.
+More information will be soon!
 
 ## License
 
