@@ -20,7 +20,7 @@ end
 function update(self, dt)
     self.speed_update = self.speed_update + dt
     if self.speed_update > 0.333 then
-        gui.set_text(self.speed_text, string.format("%d", level_state.car_speed * 3.6))
+        gui.set_text(self.speed_text, string.format("%d", level_state.car_speed * 5))
         self.speed_update = 0
     end
 

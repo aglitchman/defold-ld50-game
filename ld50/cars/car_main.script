@@ -6,25 +6,25 @@ go.property("turn_speed2", 10)
 -- 250: DRIFT
 -- 1000: RACE CAR
 go.property("traction_const", 500)
-go.property("acceleration_apply_point", vmath.vector3(0, -0.3, -1.8))
+go.property("acceleration_apply_point", vmath.vector3(0, -0.1, -1.8))
 
 go.property("async_init", true)
 go.property("debug_draw", false)
 go.property("debug_info", false)
 
-go.property("car_physics_id", hash("/civ_car_01/physics"))
+go.property("car_physics_id", hash("/cartoon_car_01/physics"))
 go.property("car_physics_chassis_id", hash("collision"))
-go.property("car_physics_wheel1_id", hash("/civ_car_01/physics_wheel_fl"))
-go.property("car_physics_wheel2_id", hash("/civ_car_01/physics_wheel_fr"))
-go.property("car_physics_wheel3_id", hash("/civ_car_01/physics_wheel_rl"))
-go.property("car_physics_wheel4_id", hash("/civ_car_01/physics_wheel_rr"))
-go.property("car_visuals_id", hash("/civ_car_01/visuals"))
-go.property("car_visuals_body_id", hash("/civ_car_01/visuals_body"))
+go.property("car_physics_wheel1_id", hash("/cartoon_car_01/physics_wheel_fl"))
+go.property("car_physics_wheel2_id", hash("/cartoon_car_01/physics_wheel_fr"))
+go.property("car_physics_wheel3_id", hash("/cartoon_car_01/physics_wheel_rl"))
+go.property("car_physics_wheel4_id", hash("/cartoon_car_01/physics_wheel_rr"))
+go.property("car_visuals_id", hash("/cartoon_car_01/visuals"))
+go.property("car_visuals_body_id", hash("/cartoon_car_01/visuals_body"))
 go.property("car_visuals_body_mesh_id", hash("mesh"))
-go.property("car_visuals_wheel1_id", hash("/civ_car_01/visuals_wheel_fl"))
-go.property("car_visuals_wheel2_id", hash("/civ_car_01/visuals_wheel_fr"))
-go.property("car_visuals_wheel3_id", hash("/civ_car_01/visuals_wheel_rl"))
-go.property("car_visuals_wheel4_id", hash("/civ_car_01/visuals_wheel_rr"))
+go.property("car_visuals_wheel1_id", hash("/cartoon_car_01/visuals_wheel_fl"))
+go.property("car_visuals_wheel2_id", hash("/cartoon_car_01/visuals_wheel_fr"))
+go.property("car_visuals_wheel3_id", hash("/cartoon_car_01/visuals_wheel_rl"))
+go.property("car_visuals_wheel4_id", hash("/cartoon_car_01/visuals_wheel_rr"))
 go.property("car_visuals_wheel_mesh_id", hash("mesh"))
 
 go.property("is_player", false)
@@ -332,9 +332,12 @@ function update(self, dt)
 
     if self.is_player then
         level_state.car_speed = c.car_speed
+
+        self.acceleration_boost = math3d.lerp(0.5, self.acceleration_boost, 0, dt)
+        render3d.debug_log(string.format("BOOST %.03f", self.acceleration_boost))
     end
 
-    local acceleration_const = self.acceleration_const * c.car_mass
+    local acceleration_const = (self.acceleration_const + self.acceleration_boost) * c.car_mass
     local turn_speed1 = self.turn_speed1 * c.car_mass
     local turn_speed2 = self.turn_speed2 * c.car_mass
 
@@ -380,7 +383,10 @@ function update(self, dt)
 
         -- FX: dust
         self.dust_accum = self.dust_accum + dt
-        local dust_dt = 0.4 / cur_speed
+        local dust_dt = 0.8 / cur_speed
+        if self.is_player then
+            dust_dt = 0.4 / cur_speed
+        end
         while self.dust_accum >= dust_dt do
             fx.road_dust(c.car_position + vmath.rotate(c.car_rotation, vmath.vector3((math.random() - 0.5) * 1.2, -0.5, -0.8)))
             self.dust_accum = self.dust_accum - dust_dt

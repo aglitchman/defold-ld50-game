@@ -66,6 +66,7 @@ local function start(self)
     end
 
     go.set(self.player_car_main, "input_gas_pedal_value", 1)
+    go.set(self.player_car_main, "acceleration_boost", 5)
 
     self.car_spawning = true
     self.car_spawn_timer = 0
@@ -120,12 +121,14 @@ local function merge(self, message)
     car.killed = true
     other_car.killed = true
 
+    local boost = go.get(car.car_main, "acceleration_boost")
     msg.post(car.car_main, "kill")
     msg.post(other_car.car_main, "kill")
 
     local car_main = spawn_player(self, message.car_data.car_position, message.car_data.car_rotation, car.car_color)
     go.set(car_main, "start_velocity", message.car_data.car_velocity)
     go.set(car_main, "input_gas_pedal_value", 1)
+    go.set(car_main, "acceleration_boost", boost * 0.5 + 10)
 end
 
 function init(self)
