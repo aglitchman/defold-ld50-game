@@ -281,6 +281,11 @@ embedded_instances {
   "    value: \"/civ_car_01/visuals_wheel_rr\"\n"
   "    type: PROPERTY_TYPE_HASH\n"
   "  }\n"
+  "  properties {\n"
+  "    id: \"getaway_car_color\"\n"
+  "    value: \"4.0\"\n"
+  "    type: PROPERTY_TYPE_NUMBER\n"
+  "  }\n"
   "}\n"
   ""
   position {

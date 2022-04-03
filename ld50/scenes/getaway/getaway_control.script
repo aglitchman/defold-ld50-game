@@ -21,16 +21,26 @@ local render3d = require("scene3d.render.render3d")
 local EMPTY_HASH = hash("")
 local DISABLE = hash("disable")
 
-local function get_random_factory(self)
-    return self.factories[math.random(1, #self.factories)]
+local function get_random_factory(self, exclude_index)
+    if exclude_index then
+        local tmp = {}
+        for i, v in ipairs(self.factories) do
+            if i ~= exclude_index then
+                table.insert(tmp, v)
+            end
+        end
+        return tmp[math.random(1, #tmp)]
+    else
+        return self.factories[math.random(1, #self.factories)]
+    end
 end
 
 local function follow_object(self, obj_id)
     go.set(self.orbit_follow_url, "follow_object_id", obj_id)
 end
 
-local function spawn_player(self, position, rotation)
-    local factory_url = get_random_factory(self)
+local function spawn_player(self, position, rotation, exclude_car_color)
+    local factory_url = get_random_factory(self, exclude_car_color)
     local car_main, hull_obj_id = cars.spawn(factory_url, position, rotation)
     follow_object(self, hull_obj_id)
 
@@ -103,13 +113,17 @@ local function merge(self, message)
         return
     end
 
+    if car.car_color ~= other_car.car_color then
+        return
+    end
+
     car.killed = true
     other_car.killed = true
 
     msg.post(car.car_main, "kill")
     msg.post(other_car.car_main, "kill")
 
-    local car_main = spawn_player(self, message.car_data.car_position, message.car_data.car_rotation)
+    local car_main = spawn_player(self, message.car_data.car_position, message.car_data.car_rotation, car.car_color)
     go.set(car_main, "start_velocity", message.car_data.car_velocity)
     go.set(car_main, "input_gas_pedal_value", 1)
 end

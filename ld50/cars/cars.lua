@@ -2,10 +2,11 @@ local M = {}
 
 M.list = {}
 
-function M.register(physics_id, car_main, car_collection)
+function M.register(physics_id, car_main, car_color, car_collection)
     table.insert(M.list, {
         physics_id = physics_id,
         car_main = car_main,
+        car_color = car_color,
         collection = car_collection
     })
 end
@@ -58,7 +59,8 @@ function M.spawn(collectionfactory_url, position, rotation)
 
     go.set(car_merge, "car_main_script", car_main)
 
-    M.register(car[hash("/physics")], car_main, car)
+    local car_color = go.get(car_main, "getaway_car_color")
+    M.register(car[hash("/physics")], car_main, car_color, car)
 
     return car_main, car[hash("/visuals")]
 end

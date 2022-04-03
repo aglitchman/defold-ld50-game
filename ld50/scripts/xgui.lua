@@ -8,6 +8,11 @@ function M.init_node(self, name, alpha)
     if alpha then
         gui.set_alpha(self[name], alpha)
     end
+
+    if not self.all_nodes then
+        self.all_nodes = {}
+    end
+    table.insert(self.all_nodes, self[name])
 end
 
 function M.get_alpha(node)
