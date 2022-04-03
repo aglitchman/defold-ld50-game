@@ -1,0 +1,20 @@
+go.property("car_main_script", msg.url())
+
+local TRIGGER_RESPONSE = hash("trigger_response")
+local MERGE = hash("merge")
+
+function init(self)
+end
+
+function final(self)
+end
+
+function on_message(self, message_id, message, sender)
+    if message_id == TRIGGER_RESPONSE then
+        if message.group ~= MERGE then
+            return
+        end
+
+        msg.post(self.car_main_script, "merge_request", message)
+    end
+end

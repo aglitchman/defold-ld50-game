@@ -26,12 +26,14 @@ go.property("car_visuals_wheel3_id", hash("/civ_car_01/visuals_wheel_rl"))
 go.property("car_visuals_wheel4_id", hash("/civ_car_01/visuals_wheel_rr"))
 go.property("car_visuals_wheel_mesh_id", hash("mesh"))
 
+go.property("getaway_control_script", msg.url())
 go.property("direction_correction", true)
 go.property("direction_target", vmath.vector3(0, 0, -10))
 go.property("adaptive_cruise_control", false)
 go.property("keyboard_input", false)
 go.property("key_left", hash("key_a"))
 go.property("key_right", hash("key_d"))
+go.property("can_merge", false)
 
 go.property("input_gas_pedal_value", 1)
 go.property("input_steering_wheel_value", 0)
@@ -44,6 +46,7 @@ local render3d = require("scene3d.render.render3d")
 local frustum_mesh = require("scene3d.scripts.frustum_mesh")
 local fx = require("ld50.fx.scripts.fx")
 local level_state = require("ld50.scenes.getaway.level_state")
+local cars = require("ld50.cars.cars")
 
 local APPLY_FORCE = hash("apply_force")
 local INIT = hash("init")
@@ -133,6 +136,44 @@ local function process_input(self, dt)
     -- self.input_gas_pedal_value = sz
 end
 
+local function handle_merge(self, message)
+    msg.post(self.getaway_control_script, "merge", {
+        id = self.car_physics_id,
+        other_id = message.other_id,
+
+        car_data = self.car_data
+    })
+
+--     local other_car = cars.find_by_physics(message.other_id)
+--     pprint(other_car)
+-- 
+--     msg.post(other_car.car_main, "kill")
+--     msg.post("#", "kill")
+end
+
+local function handle_spawn(self)
+    go.set_scale(1.25, self.visuals_url)
+    go.animate(self.visuals_url, "scale", go.PLAYBACK_ONCE_FORWARD, 1, go.EASING_OUTBACK, 0.5, 0)
+end
+
+local function handle_kill(self)
+    local c = self.car_data
+
+    self.killed = true
+
+    physics.set_maskbit(self.chassis_url, hash("killed_car"), true)
+    physics.set_maskbit(self.chassis_url, physics.get_group(self.chassis_url), false)
+    physics.set_group(self.chassis_url, hash("killed_car"))
+
+    go.cancel_animations(self.visuals_url, "scale")
+    go.animate(self.visuals_url, "scale", go.PLAYBACK_ONCE_FORWARD, 0.0001, go.EASING_OUTSINE, 0.05, 0, function (self)
+        cars.delete(self.car_physics_id)
+    end)
+
+    -- self.stop_visuals = true
+    fx.puff(c.car_position, self.car_visuals_id)
+end
+
 local function init_car(self)
     level_state.car_count = level_state.car_count + 1
 
@@ -143,6 +184,10 @@ local function init_car(self)
     local meshes = {
         msg.url(nil, self.car_visuals_body_id, self.car_visuals_body_mesh_id)
     }
+
+    -- timer.delay(1, true, function (self)
+    --     fx.puff(self.car_data.car_position + vmath.vector3(5, 0, 0))
+    -- end)
 
     self.car_data = {
         car_mass = go.get(self.chassis_url, "mass"),
@@ -181,6 +226,8 @@ local function init_car(self)
     self.dust_accum = 0
     self.no_input_time = 0
 
+    handle_spawn(self)
+
     frustum_mesh.init(self, meshes)
 end
 
@@ -193,6 +240,8 @@ function init(self)
 end
 
 function final(self)
+    cars.unregister(self.car_physics_id)
+
     if not self.car_data then
         return
     end
@@ -225,8 +274,10 @@ function update(self, dt)
     c.car_rotation = car_rotation
     c.car_euler = go.get(self.physics_url, "euler")
 
-    go.set_rotation(c.car_rotation, self.visuals_url)
-    go.set_position(c.car_visual_position, self.visuals_url)
+    if not self.stop_visuals then
+        go.set_rotation(c.car_rotation, self.visuals_url)
+        go.set_position(c.car_visual_position, self.visuals_url)
+    end
 
     --
     -- CONTROLS
@@ -359,9 +410,9 @@ function update(self, dt)
         msg.post("@render:", "draw_line", { start_point = c.car_position + debug_front, end_point = c.car_position + debug_front + debug_turn_dir, color = vmath.vector4(0, 1, 0, 1) } )
     end
 
-    -- if self.debug_info then
-    render3d.debug_log("Car speed " .. string.format("%.02f m/s, %.0f KMH", math.abs(c.car_speed), math.abs(c.car_speed) * 3.6))
-    -- end
+    if self.debug_info then
+        render3d.debug_log("Car speed " .. string.format("%.02f m/s, %.0f KMH", math.abs(c.car_speed), math.abs(c.car_speed) * 3.6))
+    end
 
     --
     -- FRUSTUM CULL
@@ -377,6 +428,18 @@ function on_message(self, message_id, message, sender)
         self.wheel_touching[message.wheel_id] = message.touching
     elseif message_id == INIT then
         init_car(self)
+    elseif message_id == hash("merge_request") then
+        if not self.can_merge then
+            return
+        end
+
+        handle_merge(self, message)
+    elseif message_id == hash("kill") then
+        if self.killed then
+            return
+        end
+
+        handle_kill(self)
     end
 end
 

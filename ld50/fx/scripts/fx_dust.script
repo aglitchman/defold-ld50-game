@@ -1,5 +1,8 @@
 local render3d = require("scene3d.render.render3d")
 
+local ROAD_DUST = hash("road_dust")
+local PUFF = hash("puff")
+
 function init(self)
     self.instances = {}
 
@@ -33,7 +36,7 @@ function update(self, dt)
 end
 
 function on_message(self, message_id, message, sender)
-    if message_id == hash("road_dust") then
+    if message_id == ROAD_DUST then
         local factory_url = self.factories[math.random(1, #self.factories)]
         local obj_id = factory.create(factory_url, message.position, nil, nil, 0.0001)
 
@@ -47,5 +50,34 @@ function on_message(self, message_id, message, sender)
             obj_id = obj_id,
             lifetime = lifetime
         })
+    elseif message_id == PUFF then
+        -- TODO: refactor that total mess!
+        local r = 0.008
+        local r2 = 2
+        local count = 20 -- math.random(10, 12)
+        local dangle = 360 / count
+        for i = 1, count do
+            local factory_url = self.factories[math.random(1, #self.factories)]
+            local angle = math.rad(dangle * (i - 1) + dangle * math.random() * 0.5)
+            local x = math.cos(angle) * r
+            local z = math.sin(angle) * r
+            local r3 = 0 -- 0.05 * math.random()
+            local x2 = math.cos(angle) * (r2 + r3)
+            local z2 = math.sin(angle) * (r2 + r3)
+            local scale = 1.25 -- vmath.vector3((20 + math.random(0, 10)) / 10)
+            local obj_id = factory.create(factory_url, message.position + vmath.vector3(x, 0, z), nil, nil, scale)
+            local lifetime = 0.5
+            go.animate(obj_id, "position", go.PLAYBACK_ONCE_FORWARD, message.position + vmath.vector3(x2, 0, z2), go.EASING_OUTSINE, lifetime)
+            go.animate(obj_id, "scale", go.PLAYBACK_ONCE_FORWARD, 0.0001, go.EASING_INQUAD, lifetime * 0.5, lifetime * 0.5)
+
+            -- if message.parent_id then
+            --     go.set_parent(obj_id, message.parent_id, false)
+            -- end
+
+            table.insert(self.instances, {
+                obj_id = obj_id,
+                lifetime = lifetime
+            })
+        end
     end
 end

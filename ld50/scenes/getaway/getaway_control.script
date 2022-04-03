@@ -1,6 +1,6 @@
 go.property("orbit_follow_url", msg.url("#orbit_follow"))
 go.property("factory_car_01_url", msg.url("#civ_car_01"))
-go.property("car_spawn_rate", 0.5)
+go.property("car_spawn_rate", 0.75)
 go.property("car_spawn_lanes", 3)
 go.property("lane_width", 3.6)
 go.property("debug_mesh_id", hash("debug_mesh"))
@@ -22,16 +22,26 @@ local function follow_object(self, obj_id)
     go.set(self.orbit_follow_url, "follow_object_id", obj_id)
 end
 
-local function start(self)
-    go.animate(self.orbit_follow_url, "distance", go.PLAYBACK_ONCE_FORWARD, 85, go.EASING_INOUTSINE, 1, 0.05)
-    go.animate(self.orbit_follow_url, "height", go.PLAYBACK_ONCE_FORWARD, 86, go.EASING_INOUTSINE, 1, 0.05)
-
-    local car_main, hull_obj_id = cars.spawn(self.factory_car_01_url, go.get_position(), vmath.quat())
+local function spawn_player(self, position, rotation)
+    local car_main, hull_obj_id = cars.spawn(self.factory_car_01_url, position, rotation)
     follow_object(self, hull_obj_id)
 
     self.player_url = hull_obj_id
 
+    go.set(car_main, "getaway_control_script", msg.url("#"))
     go.set(car_main, "keyboard_input", true)
+    go.set(car_main, "can_merge", true)
+
+    -- go.set(car_main, "acceleration_const", 3)
+
+    return car_main, hull_obj_id
+end
+
+local function start(self)
+    go.animate(self.orbit_follow_url, "distance", go.PLAYBACK_ONCE_FORWARD, 85, go.EASING_INOUTSINE, 0, 0) -- 1, 0.05)
+    go.animate(self.orbit_follow_url, "height", go.PLAYBACK_ONCE_FORWARD, 86, go.EASING_INOUTSINE, 0, 0) -- 1, 0.05)
+
+    spawn_player(self, go.get_position(), vmath.quat())
 
     self.car_spawning = true
     self.car_spawn_timer = 0
@@ -43,6 +53,10 @@ local function car_spawning(self, dt)
 
     self.car_spawn_timer = self.car_spawn_timer + dt
 
+    -- if level_state.car_count >= 2 then
+    --     return
+    -- end
+
     while self.car_spawn_timer > (1 / self.car_spawn_rate) do
         -- local props = {
         --     ["velocity"] = math.random(3, 8)
@@ -50,12 +64,14 @@ local function car_spawning(self, dt)
         -- local x = self.car_spawn_radius * 2 * (math.random() - 0.5) + self.lane_width / 2
         -- x = math.floor(x / self.lane_width) * self.lane_width - self.lane_width / 2
         local spawn_lane = math.random(1, self.car_spawn_lanes)
-        -- spawn_lane = 1
+        -- spawn_lane = 2
         local x = (spawn_lane - 0.5) * self.lane_width - (self.lane_width * self.car_spawn_lanes / 2)
         local pos = vmath.vector3(x, 0, 0)
         local car_main, hull_obj_id = cars.spawn(self.factory_car_01_url, go.get_position("/spawn_point") + pos, vmath.quat())
+        go.set(car_main, "getaway_control_script", msg.url("#"))
 
         local accel_const = math.random() * 4 + 7
+        -- accel_const = 4
         go.set(car_main, "acceleration_const", accel_const)
         go.set(car_main, "start_velocity", vmath.vector3(0, 0, -accel_const * 1.9266))
         go.set(car_main, "adaptive_cruise_control", true)
@@ -66,6 +82,24 @@ local function car_spawning(self, dt)
     end
 
     render3d.debug_log(string.format("Car Num %d", level_state.car_count))
+end
+
+local function merge(self, message)
+    local car = cars.find_by_physics(message.id)
+    local other_car = cars.find_by_physics(message.other_id)
+
+    if not car or car.killed or not other_car or other_car.killed then
+        return
+    end
+
+    car.killed = true
+    other_car.killed = true
+
+    msg.post(car.car_main, "kill")
+    msg.post(other_car.car_main, "kill")
+
+    local car_main = spawn_player(self, message.car_data.car_position, message.car_data.car_rotation)
+    go.set(car_main, "start_velocity", message.car_data.car_velocity)
 end
 
 function init(self)
@@ -88,5 +122,7 @@ end
 function on_message(self, message_id, message, sender)
     if message_id == hash("start") then
         start(self)
+    elseif message_id == hash("merge") then
+        merge(self, message)
     end
 end
