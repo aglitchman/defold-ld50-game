@@ -140,7 +140,7 @@ localizations = en
 
 [html5]
 custom_heap_size = 0
-heap_size = 64
+heap_size = 128
 htmlfile = /builtins/manifests/web/engine_template.html
 cssfile = /builtins/manifests/web/dark_theme.css
 archive_location_prefix = archive
@@ -148,6 +148,7 @@ show_fullscreen_button = 1
 show_made_with_defold = 1
 show_console_banner = 1
 scale_mode = stretch
+splash_image = /ld50_html5/cover.png
 
 [particle_fx]
 max_count = 64
