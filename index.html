@@ -343,5 +343,61 @@
   <script id="engine-start" type="text/javascript">
 		EngineLoader.load("canvas", "ld50_game");
 	</script>   
+  <script type="text/javascript">
+            // Pre-1.3.1 workaround for vsync=1
+            (function () {
+                var oldRAF = window.requestAnimationFrame;
+                var dummyFunc = function () {};
+                var prevFrameTime = 0;
+                var accumulator = 0;
+                var FPS = ("0" | 0);
+                var VSYNC = "true" == "true";
+                if (!FPS || !VSYNC) {
+                    console.log("Semi-fixed timestep requires display.vsync = 1, display.update_frequency > 60");
+                    return;
+                } else {
+                    console.log("Semi-fixed timestep is ON.");
+                }
+                var FIXED_DT = 1000 / FPS;
+                var disableRender = false;
+                var enableRender = function () {
+                    GLFW.params[0x00020003] = false;
+                };
+                Module.__fixedUpdateSupportFunc = function () {
+                    if (disableRender) {
+                        GLFW.params[0x00020003] = true;
+                    }
+                };
+                window.requestAnimationFrame = function (callback) {
+                    oldRAF(function () {
+                        if (!prevFrameTime) prevFrameTime = new Date().getTime() - FIXED_DT;
+                        var frameTime = new Date().getTime();
+
+                        var dt = frameTime - prevFrameTime;
+                        prevFrameTime = frameTime;
+
+                        if (dt > FIXED_DT * 4) dt = FIXED_DT * 4;
+                        accumulator += dt;
+
+                        var prevFunc = window.requestAnimationFrame;
+                        window.requestAnimationFrame = dummyFunc;
+
+                        while (accumulator >= FIXED_DT + FIXED_DT) {
+                            accumulator -= FIXED_DT;
+                            disableRender = true;
+                            callback();
+                            enableRender();
+                        }
+
+                        accumulator -= FIXED_DT;
+                        // TODO: Support 75Hz and more monitors
+                        if (accumulator < 0) accumulator = 0;
+                        disableRender = false;
+                        window.requestAnimationFrame = prevFunc;
+                        callback();
+                    });
+                };
+            })();
+        </script>
  </body>
 </html>
