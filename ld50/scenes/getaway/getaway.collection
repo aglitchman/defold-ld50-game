@@ -445,6 +445,24 @@ embedded_instances {
   "    w: 1.0\n"
   "  }\n"
   "}\n"
+  "embedded_components {\n"
+  "  id: \"factory_car_police\"\n"
+  "  type: \"collectionfactory\"\n"
+  "  data: \"prototype: \\\"/ld50/cars/cartoon_car_police.collection\\\"\\n"
+  "load_dynamically: false\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
   ""
   position {
     x: 0.0
@@ -466,6 +484,7 @@ embedded_instances {
 embedded_instances {
   id: "spawn_point"
   children: "kill_zone"
+  children: "police_point"
   data: "embedded_components {\n"
   "  id: \"debug_mesh\"\n"
   "  type: \"mesh\"\n"
@@ -628,6 +647,26 @@ embedded_instances {
     x: 0.0
     y: 0.0
     z: 80.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+embedded_instances {
+  id: "police_point"
+  data: ""
+  position {
+    x: 0.0
+    y: 0.0
+    z: 10.0
   }
   rotation {
     x: 0.0

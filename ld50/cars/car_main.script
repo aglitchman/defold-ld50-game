@@ -27,11 +27,16 @@ go.property("car_visuals_wheel3_id", hash("/cartoon_car_01/visuals_wheel_rl"))
 go.property("car_visuals_wheel4_id", hash("/cartoon_car_01/visuals_wheel_rr"))
 go.property("car_visuals_wheel_mesh_id", hash("mesh"))
 
+go.property("is_police", false)
+go.property("car_visuals_siren_left_id", hash("/cartoon_car_01/visuals_siren_left"))
+go.property("car_visuals_siren_right_id", hash("/cartoon_car_01/visuals_siren_right"))
+
 go.property("is_player", false)
 go.property("getaway_car_color", 1)
 go.property("getaway_control_script", msg.url())
 go.property("direction_correction", true)
 go.property("direction_target", vmath.vector3(0, 0, -10))
+go.property("direction_target_id", hash(""))
 go.property("adaptive_cruise_control", false)
 go.property("keyboard_input", false)
 go.property("key_left", hash("key_a"))
@@ -51,6 +56,7 @@ local fx = require("ld50.fx.scripts.fx")
 local level_state = require("ld50.scenes.getaway.level_state")
 local cars = require("ld50.cars.cars")
 
+local EMPTY_HASH = hash("")
 local APPLY_FORCE = hash("apply_force")
 local INIT = hash("init")
 local SUSPENSION_UPDATE = hash("suspension_update")
@@ -94,6 +100,9 @@ local function correct_direction(self)
     local c = self.car_data
 
     local target_pos = c.car_position + self.direction_target
+    if self.is_police and self.direction_target_id ~= EMPTY_HASH then
+        target_pos = go.get_position(self.direction_target_id)
+    end
 
     local car_yaw = 90 + math3d.euler_y(c.car_rotation)
     local target_yaw = math.deg(math.atan2(-(target_pos.z - c.car_position.z), target_pos.x - c.car_position.x))
@@ -180,6 +189,24 @@ local function handle_kill(self)
     fx.puff(c.car_position, self.car_visuals_id)
 end
 
+local function update_siren(self, dt)
+    if not self.is_police then
+        return
+    end
+
+    self.siren_timer = self.siren_timer + dt
+    if self.siren_timer > 0.5 then
+        self.siren_timer = 0
+        self.siren_light_num = 1 - self.siren_light_num
+
+        local mesh_left = msg.url(nil, self.car_visuals_siren_left_id, "mesh")
+        local mesh_right = msg.url(nil, self.car_visuals_siren_right_id, "mesh")
+
+        go.set(mesh_left, "tint.w", 0.5 + self.siren_light_num * 0.75)
+        go.set(mesh_right, "tint.w", 0.5 + (1 - self.siren_light_num) * 0.75)
+    end
+end
+
 local function init_car(self)
     level_state.car_count = level_state.car_count + 1
 
@@ -230,6 +257,8 @@ local function init_car(self)
         msg.post(".", "acquire_input_focus")
     end
 
+    self.siren_timer = 9999
+    self.siren_light_num = 0
     self.dust_accum = 0
     self.no_input_time = 0
 
@@ -294,6 +323,8 @@ function update(self, dt)
         go.set_rotation(c.car_rotation, self.visuals_url)
         go.set_position(c.car_visual_position, self.visuals_url)
     end
+
+    update_siren(self, dt)
 
     --
     -- CONTROLS

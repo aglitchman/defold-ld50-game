@@ -39,7 +39,7 @@ function M.delete(physics_id)
     end
 end
 
-function M.spawn(collectionfactory_url, position, rotation)
+function M.spawn(collectionfactory_url, position, rotation, is_police)
     local car = collectionfactory.create(collectionfactory_url, position, rotation, nil)
 
     local car_main = msg.url(nil, car[hash("/main")], "car_main")
@@ -56,6 +56,12 @@ function M.spawn(collectionfactory_url, position, rotation)
     go.set(car_main, "car_visuals_wheel2_id", car[hash("/visuals_wheel_fr")])
     go.set(car_main, "car_visuals_wheel3_id", car[hash("/visuals_wheel_rl")])
     go.set(car_main, "car_visuals_wheel4_id", car[hash("/visuals_wheel_rr")])
+
+    if is_police then
+        go.set(car_main, "is_police", true)
+        go.set(car_main, "car_visuals_siren_left_id", car[hash("/visuals_siren_left")])
+        go.set(car_main, "car_visuals_siren_right_id", car[hash("/visuals_siren_right")])
+    end
 
     go.set(car_merge, "car_main_script", car_main)
 

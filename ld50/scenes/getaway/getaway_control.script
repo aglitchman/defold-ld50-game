@@ -3,8 +3,9 @@ go.property("factory_car_01_url", msg.url("#factory_car_01"))
 go.property("factory_car_02_url", msg.url("#factory_car_02"))
 go.property("factory_car_03_url", msg.url("#factory_car_03"))
 go.property("factory_car_04_url", msg.url("#factory_car_04"))
+go.property("factory_car_police_url", msg.url("#factory_car_police"))
 go.property("car_spawn_rate", 0.75)
-go.property("car_spawn_lanes", 3)
+go.property("car_spawn_lanes", 5)
 go.property("lane_width", 3.6)
 go.property("debug_mesh_id", hash("debug_mesh"))
 
@@ -45,7 +46,7 @@ local function spawn_player(self, position, rotation, exclude_car_color)
     follow_object(self, hull_obj_id)
 
     self.player_car_main = car_main
-    self.player_body_url = hull_obj_id
+    self.player_hull_id = hull_obj_id
 
     go.set(car_main, "getaway_control_script", msg.url("#"))
     go.set(car_main, "is_player", true)
@@ -57,13 +58,35 @@ local function spawn_player(self, position, rotation, exclude_car_color)
     return car_main, hull_obj_id
 end
 
+local function spawn_police(self, position, rotation, exclude_car_color)
+    local car_main, hull_obj_id = cars.spawn(self.factory_car_police_url, position, rotation, true)
+
+    self.police_car_main = car_main
+    self.police_body_url = hull_obj_id
+
+    go.set(car_main, "getaway_control_script", msg.url("#"))
+    go.set(car_main, "is_police", true)
+    go.set(car_main, "input_gas_pedal_value", 1)
+
+    
+
+    local accel_const = 15
+    go.set(car_main, "acceleration_const", accel_const)
+    -- go.set(car_main, "start_velocity", vmath.vector3(0, 0, -accel_const * 1.9266))
+    -- go.set(car_main, "adaptive_cruise_control", true)
+
+    return car_main, hull_obj_id
+end
+
 local function start(self)
     go.animate(self.orbit_follow_url, "distance", go.PLAYBACK_ONCE_FORWARD, 85, go.EASING_INOUTSINE, 1, 0.05)
     go.animate(self.orbit_follow_url, "height", go.PLAYBACK_ONCE_FORWARD, 86, go.EASING_INOUTSINE, 1, 0.05)
 
-    if not self.player_body_url then
+    if not self.player_hull_id then
         spawn_player(self, go.get_position(), vmath.quat())
     end
+
+    spawn_police(self, go.get_world_position("/police_point"), vmath.quat())
 
     go.set(self.player_car_main, "input_gas_pedal_value", 1)
     go.set(self.player_car_main, "acceleration_boost", 5)
@@ -73,7 +96,11 @@ local function start(self)
 end
 
 local function car_spawning(self, dt)
-    local player_pos = go.get_position(self.player_body_url)
+    if self.police_car_main then
+        go.set(self.police_car_main, "direction_target_id", self.player_hull_id)
+    end
+
+    local player_pos = go.get_position(self.player_hull_id)
     go.set_position(vmath.vector3(0, 0, player_pos.z) + self.spawn_start_pos, "/spawn_point")
 
     self.car_spawn_timer = self.car_spawn_timer + dt
@@ -91,7 +118,7 @@ local function car_spawning(self, dt)
         local car_main, hull_obj_id = cars.spawn(factory_url, go.get_position("/spawn_point") + pos, vmath.quat())
         go.set(car_main, "getaway_control_script", msg.url("#"))
 
-        local accel_const = math.random() * 4 + 7
+        local accel_const = math.random() * 5 +  5
         -- accel_const = 4
         go.set(car_main, "acceleration_const", accel_const)
         go.set(car_main, "start_velocity", vmath.vector3(0, 0, -accel_const * 1.9266))
