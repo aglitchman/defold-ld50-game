@@ -173,6 +173,15 @@ local function handle_merge(self, message)
 --     msg.post("#", "kill")
 end
 
+local function handle_bust(self, message)
+    msg.post(self.getaway_control_script, "bust", {
+        id = self.car_physics_id,
+        other_id = message.other_id,
+
+        car_data = self.car_data
+    })
+end
+
 local function handle_spawn(self)
     go.set_scale(1.25, self.visuals_url)
     go.animate(self.visuals_url, "scale", go.PLAYBACK_ONCE_FORWARD, 1, go.EASING_OUTBACK, 0.5, 0)
@@ -504,6 +513,12 @@ function on_message(self, message_id, message, sender)
         end
 
         handle_merge(self, message)
+    elseif message_id == hash("bust_request") then
+        if not self.is_police then
+            return
+        end
+
+        handle_bust(self, message)
     elseif message_id == hash("kill") then
         if self.killed then
             return

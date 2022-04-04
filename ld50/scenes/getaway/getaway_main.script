@@ -51,10 +51,10 @@ local function start(self)
     end
     self.started = true
 
-    self.main_ui = factory.create("#main_ui")
+    local main_ui = factory.create("#main_ui")
 
     msg.post(self.start_ui, "hide")
-    msg.post(self.control_script, "start")
+    msg.post(self.control_script, "start", { main_ui = main_ui })
 end
 
 function on_input(self, action_id, action)

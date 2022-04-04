@@ -67,6 +67,7 @@ local function spawn_player(self, position, rotation, exclude_car_color)
     go.set(car_main, "keyboard_input", true)
     go.set(car_main, "can_merge", true)
 
+    -- DEBUG
     -- go.set(car_main, "acceleration_const", 3)
 
     return car_main, hull_obj_id
@@ -100,7 +101,7 @@ local function start(self)
         spawn_player(self, go.get_position(), vmath.quat())
     end
 
-    spawn_police(self, go.get_position() + vmath.vector3(0, 0, 40), vmath.quat(), true)
+    spawn_police(self, go.get_position() + vmath.vector3(0, 0, 43), vmath.quat(), true)
     self.have_police = true
 
     go.set(self.player_car_main, "input_gas_pedal_value", 1)
@@ -235,6 +236,30 @@ local function merge(self, message)
     go.set(car_main, "acceleration_boost", boost * 0.5 + 10)
 end
 
+local function bust(self, message)
+    local police_car = cars.find_by_physics(message.id)
+    local other_car = cars.find_by_physics(message.other_id)
+
+    if not police_car or police_car.killed or not other_car or other_car.killed then
+        return
+    end
+
+    other_car.killed = true
+
+    -- local boost = go.get(car.car_main, "acceleration_boost")
+    go.set(police_car.car_main, "adaptive_cruise_control", true)
+    -- msg.post(other_car.car_main, "kill")
+
+    go.set(other_car.car_main, "keyboard_input", false)
+    go.set(other_car.car_main, "input_gas_pedal_value", 0)
+
+    go.animate(self.orbit_follow_url, "distance", go.PLAYBACK_ONCE_FORWARD, 54, go.EASING_INOUTSINE, 1, 0.05)
+    go.animate(self.orbit_follow_url, "height", go.PLAYBACK_ONCE_FORWARD, 55, go.EASING_INOUTSINE, 1, 0.05)
+
+    msg.post(self.main_ui, "hide")
+    factory.create("/main#gameover_ui")
+end
+
 function init(self)
     if self.debug_mesh_id ~= EMPTY_HASH then
         msg.post(msg.url(nil, nil, self.debug_mesh_id), DISABLE)
@@ -271,8 +296,13 @@ end
 
 function on_message(self, message_id, message, sender)
     if message_id == hash("start") then
+        if message.main_ui then
+            self.main_ui = message.main_ui
+        end
         start(self)
     elseif message_id == hash("merge") then
         merge(self, message)
+    elseif message_id == hash("bust") then
+        bust(self, message)
     end
 end

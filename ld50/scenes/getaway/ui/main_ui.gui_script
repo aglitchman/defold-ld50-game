@@ -1,18 +1,13 @@
 local level_state = require("ld50.scenes.getaway.level_state")
 local math3d = require("scene3d.helpers.math3d")
-
-local function init_node(self, name, alpha)
-    self[name] = gui.get_node(name)
-    if alpha then
-        gui.set_alpha(self[name], alpha)
-    end
-end
+local xgui = require("ld50.scripts.xgui")
 
 function init(self)
-    init_node(self, "speed_text")
-    init_node(self, "score_text")
+    xgui.init_node(self, "speed_text")
+    xgui.init_node(self, "score_text")
 
-    init_node(self, "speedometer_pie")
+    xgui.init_node(self, "speedometer")
+    xgui.init_node(self, "speedometer_pie")
     self.pie_angle_low = gui.get_fill_angle(self.speedometer_pie)
     self.pie_angle_high = -350
 
@@ -25,6 +20,10 @@ function final(self)
 end
 
 function update(self, dt)
+    if self.hiding then
+        return
+    end
+
     self.time = self.time + dt
 
     self.speed_update = self.speed_update + dt

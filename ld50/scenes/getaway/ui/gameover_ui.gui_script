@@ -46,8 +46,8 @@ end
 
 function update(self, dt)
     if self.counter_on then
-        self.cur_score = math3d.lerp(0.6, self.cur_score, self.final_score, dt)
-        if self.cur_score >= self.final_score * 0.98 then
+        self.cur_score = math3d.lerp(0.7, self.cur_score, self.final_score, dt)
+        if self.cur_score >= self.final_score * 0.98 or self.final_score < 3 then
             self.cur_score = self.final_score
             self.counter_on = false
             xgui.anim_alpha(self.press_any_to_restart_text, 1, 0.5, 0, wait_for_keys)
