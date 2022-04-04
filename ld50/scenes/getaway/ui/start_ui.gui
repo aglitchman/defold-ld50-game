@@ -19,7 +19,7 @@ background_color {
 }
 nodes {
   position {
-    x: 1018.118
+    x: 558.12
     y: 711.091
     z: 0.0
     w: 1.0
@@ -82,7 +82,7 @@ nodes {
 }
 nodes {
   position {
-    x: 882.411
+    x: 422.41
     y: 846.798
     z: 0.0
     w: 1.0
@@ -146,7 +146,7 @@ nodes {
 }
 nodes {
   position {
-    x: 973.507
+    x: 500.0
     y: 110.039
     z: 0.0
     w: 1.0
@@ -210,7 +210,7 @@ nodes {
 }
 nodes {
   position {
-    x: 880.0
+    x: 420.0
     y: 303.925
     z: 0.0
     w: 1.0
@@ -265,7 +265,7 @@ nodes {
 }
 nodes {
   position {
-    x: 1040.0
+    x: 580.0
     y: 303.925
     z: 0.0
     w: 1.0
@@ -328,5 +328,8 @@ layers {
   name: "font"
 }
 material: "/builtins/materials/gui.material"
+layouts {
+  name: "Start UI"
+}
 adjust_reference: ADJUST_REFERENCE_PARENT
 max_nodes: 100

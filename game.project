@@ -8,7 +8,7 @@ shared_state = 1
 [display]
 width = 1920
 height = 1080
-display_profiles = /scene3d/helpers/gui.display_profilesc
+display_profiles = /ld50/gui.display_profilesc
 high_dpi = 1
 
 [android]
@@ -44,28 +44,28 @@ clear_color_blue = 0.25
 scale = 1.0
 gravity_y = -9.8
 type = 3D
-max_collisions = 10000
-max_contacts = 10000
+max_collisions = 1000
+max_contacts = 1000
 ray_cast_limit_3d = 1000
 trigger_overlap_capacity = 100
 world_count = 5
 
 [graphics]
-max_draw_calls = 10000
+max_draw_calls = 1000
 max_debug_vertices = 100000
 texture_profiles = /ld50/compressed.texture_profiles
 
 [sprite]
-max_count = 10000
+max_count = 8500
 
 [model]
-max_count = 10000
+max_count = 8700
 
 [mesh]
-max_count = 10000
+max_count = 9000
 
 [resource]
-max_resources = 10000
+max_resources = 4000
 
 [collection_proxy]
 max_count = 10
@@ -84,5 +84,5 @@ no_auto_input = 1
 anisotropic_filtering = 4
 
 [collection]
-max_instances = 2048
+max_instances = 4096
 

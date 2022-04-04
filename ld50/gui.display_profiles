@@ -1,0 +1,28 @@
+profiles {
+  name: "Debug UI"
+  qualifiers {
+    width: 1920
+    height: 1080
+  }
+}
+profiles {
+  name: "Start UI"
+  qualifiers {
+    width: 1000
+    height: 1080
+  }
+}
+profiles {
+  name: "Gameover UI"
+  qualifiers {
+    width: 1000
+    height: 1080
+  }
+}
+profiles {
+  name: "Main UI"
+  qualifiers {
+    width: 1000
+    height: 1080
+  }
+}

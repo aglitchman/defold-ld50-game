@@ -393,10 +393,12 @@ function update(self, dt)
         level_state.car_accel_boost = self.acceleration_boost
     end
 
+    local slowing_down = false
     local acceleration_const = (self.acceleration_const + self.acceleration_boost) * c.car_mass
     if not self.is_police and (c.car_position.x < -self.slowdown_radius or c.car_position.x > self.slowdown_radius) then
         acceleration_const = self.slowdown_to_accel * c.car_mass
         self.acceleration_boost = math3d.lerp(0.75, self.acceleration_boost, 0, dt)
+        slowing_down = true
     end 
 
     local turn_speed1 = self.turn_speed1 * c.car_mass
@@ -445,11 +447,16 @@ function update(self, dt)
         -- FX: dust
         self.dust_accum = self.dust_accum + dt
         local dust_dt = 0.8 / cur_speed
+        local width2 = 1.2
         if self.is_player then
             dust_dt = 0.4 / cur_speed
         end
+        if slowing_down then
+            dust_dt = 0.1 / cur_speed
+            width2 = width2 * 1.75
+        end
         while self.dust_accum >= dust_dt do
-            fx.road_dust(c.car_position + vmath.rotate(c.car_rotation, vmath.vector3((math.random() - 0.5) * 1.2, -0.5, -0.8)))
+            fx.road_dust(c.car_position + vmath.rotate(c.car_rotation, vmath.vector3((math.random() - 0.5) * width2, -0.5, -0.8)))
             self.dust_accum = self.dust_accum - dust_dt
         end
     else

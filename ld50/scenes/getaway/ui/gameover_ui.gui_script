@@ -30,7 +30,7 @@ function init(self)
     xgui.init_node(self, "score_text", 0)
     xgui.init_node(self, "press_any_to_restart_text", 0)
 
-    xgui.anim_alpha(self.cover, 0.25, 0.25)
+    xgui.anim_alpha(self.cover, 0.35, 0.25)
 
     xgui.set_scale(self.busted_text, 4)
     gui.animate(self.busted_text, "scale", 2, gui.EASING_OUTBOUNCE, 0.75)
