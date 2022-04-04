@@ -62,6 +62,7 @@ function M.spawn(collectionfactory_url, position, rotation, is_police)
         go.set(car_main, "car_visuals_siren_left_id", car[hash("/visuals_siren_left")])
         go.set(car_main, "car_visuals_siren_right_id", car[hash("/visuals_siren_right")])
     end
+    go.set(car_main, "car_visuals_ftue_target_id", car[hash("/visuals_ftue_target")])
 
     go.set(car_merge, "car_main_script", car_main)
 

@@ -8,6 +8,9 @@ function M.reset()
     -- Global State
     M.window_focused = true
     M.audio_muted = false -- Usually paused by ads, etc.
+
+    -- Serializable
+    M.first_start = true
 end
 
 M.reset()

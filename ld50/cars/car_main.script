@@ -27,6 +27,9 @@ go.property("car_visuals_wheel3_id", hash("/cartoon_car_01/visuals_wheel_rl"))
 go.property("car_visuals_wheel4_id", hash("/cartoon_car_01/visuals_wheel_rr"))
 go.property("car_visuals_wheel_mesh_id", hash("mesh"))
 
+go.property("is_ftue_target", false)
+go.property("car_visuals_ftue_target_id", hash("/cartoon_car_01/visuals_ftue_target"))
+
 go.property("is_police", false)
 go.property("car_visuals_siren_left_id", hash("/cartoon_car_01/visuals_siren_left"))
 go.property("car_visuals_siren_right_id", hash("/cartoon_car_01/visuals_siren_right"))
@@ -267,6 +270,12 @@ local function init_car(self)
     self.dust_accum = 0
     self.no_input_time = 0
 
+    if not self.is_ftue_target then
+        msg.post(msg.url(nil, self.car_visuals_ftue_target_id, "sprite"), "disable")
+    else
+        go.animate(self.car_visuals_ftue_target_id, "euler.y", go.PLAYBACK_LOOP_FORWARD, 3600, go.EASING_LINEAR, 20)
+    end
+
     handle_spawn(self)
 
     frustum_mesh.init(self, meshes)
@@ -367,7 +376,7 @@ function update(self, dt)
     c.car_speed = -local_velocity.z
 
     if self.is_player then
-        self.acceleration_boost = math3d.lerp(0.5, self.acceleration_boost, 0, dt)
+        self.acceleration_boost = math3d.lerp(0.4, self.acceleration_boost, 0, dt)
         render3d.debug_log(string.format("BOOST %.03f", self.acceleration_boost))
 
         level_state.car_speed = c.car_speed
@@ -376,8 +385,9 @@ function update(self, dt)
     end
 
     local acceleration_const = (self.acceleration_const + self.acceleration_boost) * c.car_mass
-    if self.is_player and (c.car_position.x < -self.slowdown_radius or c.car_position.x > self.slowdown_radius) then
+    if not self.is_police and (c.car_position.x < -self.slowdown_radius or c.car_position.x > self.slowdown_radius) then
         acceleration_const = self.slowdown_to_accel * c.car_mass
+        self.acceleration_boost = math3d.lerp(0.75, self.acceleration_boost, 0, dt)
     end 
 
     local turn_speed1 = self.turn_speed1 * c.car_mass

@@ -11,6 +11,11 @@ function M.reset()
 
     -- Debug
     M.car_count = 0
+    M.merge_count = 0
+
+    -- FTUE
+    M.ftue = false
+    M.ftue_targets = 0
 end
 
 function M.calc_score()

@@ -1,5 +1,6 @@
 local audio = require("ld50.scripts.audio")
 local level_state = require("ld50.scenes.getaway.level_state")
+local global_state = require("ld50.scripts.global_state")
 local render3d = require("scene3d.render.render3d")
 
 go.property("acquire_input_focus", true)
@@ -20,6 +21,10 @@ function init(self)
     end
 
     level_state.reset()
+    level_state.ftue = global_state.first_start
+    if level_state.ftue then
+        level_state.ftue_targets = 3
+    end
 
     audio.play_bgm("music1")
 
@@ -30,6 +35,8 @@ function final(self)
     print("getaway_main: final()")
 
     audio.stop_bgm("music1")
+
+    global_state.first_start = false
 end
 
 function update(self, dt)

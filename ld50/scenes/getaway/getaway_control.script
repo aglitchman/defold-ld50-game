@@ -24,17 +24,27 @@ local render3d = require("scene3d.render.render3d")
 local EMPTY_HASH = hash("")
 local DISABLE = hash("disable")
 
-local function get_random_factory(self, exclude_index)
+local DIFF_TABLE = {
+    { merge_count = 0, max_colors = 2 },
+    { merge_count = 2, max_colors = 3 },
+    { merge_count = 6, max_colors = 4 },
+    { merge_count = 9, max_colors = 4, car_spawn_rate = 1 }
+}
+
+local function get_random_factory(self, exclude_index, max)
     if exclude_index then
         local tmp = {}
         for i, v in ipairs(self.factories) do
             if i ~= exclude_index then
                 table.insert(tmp, v)
             end
+            if i == max then
+                break
+            end
         end
         return tmp[math.random(1, #tmp)]
     else
-        return self.factories[math.random(1, #self.factories)]
+        return self.factories[math.random(1, math.min(max, #self.factories))]
     end
 end
 
@@ -44,11 +54,12 @@ local function follow_object(self, obj_id)
 end
 
 local function spawn_player(self, position, rotation, exclude_car_color)
-    local factory_url = get_random_factory(self, exclude_car_color)
+    local factory_url = get_random_factory(self, exclude_car_color, self.max_colors)
     local car_main, hull_obj_id = cars.spawn(factory_url, position, rotation)
     follow_object(self, hull_obj_id)
 
     self.player_car_main = car_main
+    self.player_car_color = go.get(car_main, "getaway_car_color")
     self.player_hull_id = hull_obj_id
 
     go.set(car_main, "getaway_control_script", msg.url("#"))
@@ -89,7 +100,7 @@ local function start(self)
         spawn_player(self, go.get_position(), vmath.quat())
     end
 
-    spawn_police(self, go.get_position() + vmath.vector3(0, 0, 50), vmath.quat(), true)
+    spawn_police(self, go.get_position() + vmath.vector3(0, 0, 40), vmath.quat(), true)
     self.have_police = true
 
     go.set(self.player_car_main, "input_gas_pedal_value", 1)
@@ -126,7 +137,7 @@ local function update_police(self, dt)
 
     local distance = vmath.length(go.get_position(self.player_hull_id) - go.get_position(self.police_hull_id))
     if distance > 100 and self.police_respawn_timer <= 0 then
-        print("Respawn police - distance", distance)
+        print("!!! Respawn police - distance", distance)
         self.police_spawn_timer = 3
         msg.post(self.police_car_main, "kill")
         spawn_police(self, go.get_world_position("/police_point"), vmath.quat(), true)
@@ -143,9 +154,22 @@ local function car_spawning(self, dt)
     --     return
     -- end
 
+    if level_state.ftue and level_state.car_count >= 3 then
+        self.car_spawn_timer = 0
+        return
+    end
+
     while self.car_spawn_timer > (1 / self.car_spawn_rate) do
-        local factory_url = get_random_factory(self)
+        local factory_url = get_random_factory(self, nil, self.max_colors)
         local spawn_lane = math.random(1, self.car_spawn_lanes)
+        local is_ftue_target = false
+        if level_state.ftue then
+            is_ftue_target = true
+            if level_state.merge_count == 0 then
+                spawn_lane = math.ceil(self.car_spawn_lanes / 2)
+            end
+            factory_url = self.factories[self.player_car_color]
+        end
         -- spawn_lane = 2
         local x = (spawn_lane - 0.5) * self.lane_width - (self.lane_width * self.car_spawn_lanes / 2)
         local pos = vmath.vector3(x, 0, 0)
@@ -158,6 +182,7 @@ local function car_spawning(self, dt)
         go.set(car_main, "start_velocity", vmath.vector3(0, 0, -accel_const * 1.9266))
         go.set(car_main, "adaptive_cruise_control", true)
         go.set(car_main, "input_gas_pedal_value", 1)
+        go.set(car_main, "is_ftue_target", is_ftue_target)
 
         -- print(x, "accel_const", accel_const)
 
@@ -177,6 +202,24 @@ local function merge(self, message)
 
     if car.car_color ~= other_car.car_color then
         return
+    end
+
+    level_state.merge_count = level_state.merge_count + 1
+    for _, diff in ipairs(DIFF_TABLE) do
+        if diff.merge_count == level_state.merge_count then
+            print("NEW DIFFICULTY!")
+            pprint(diff)
+            if diff.max_colors then
+                self.max_colors = diff.max_colors
+            end
+            if diff.car_spawn_rate then
+                self.car_spawn_rate = diff.car_spawn_rate
+            end
+            if level_state.ftue then
+                print("FTUE ended")
+                level_state.ftue = false
+            end
+        end
     end
 
     car.killed = true
@@ -207,6 +250,8 @@ function init(self)
     end
 
     self.spawn_start_pos = go.get_position("/spawn_point")
+
+    self.max_colors = DIFF_TABLE[1].max_colors
 
     spawn_player(self, go.get_position(), vmath.quat())
 end

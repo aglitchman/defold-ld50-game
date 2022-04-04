@@ -47,7 +47,7 @@ function update(self, dt)
     local unstability = (math3d.ping_pong(self.time, 0.04) - (0.04 / 2)) * 12
     -- print(level_state.car_accel_const, unstability, level_state.car_accel_boost)
     local max_accel = 12 + 0.04 * 12
-    local max_power = 20
+    local max_power = 10
     local max_speed = 80
     local p = math3d.clamp01(level_state.car_accel_boost / max_power) * 0.8
     self.speedometer_boost = math3d.lerp(0.7, self.speedometer_boost or p, p, dt)
