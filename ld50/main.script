@@ -32,6 +32,9 @@ function init(self)
     -- Show FPS
     render3d.show_fps = true
 
+    -- Init math.random
+    math.randomseed(100000 * (socket.gettime() % 1))
+
     print("Loading the first scene", self.scene1)
     main.load_scene(self, self.scene1)
 end

@@ -48,7 +48,7 @@ go.property("key_left2", hash("key_left"))
 go.property("key_right2", hash("key_right"))
 go.property("can_merge", false)
 
-go.property("slowdown_radius", 11)
+go.property("slowdown_radius", 10)
 go.property("slowdown_to_accel", 1)
 
 go.property("input_gas_pedal_value", 0)
