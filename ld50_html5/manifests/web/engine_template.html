@@ -99,7 +99,7 @@
                 var dummyFunc = function () {};
                 var prevFrameTime = 0;
                 var accumulator = 0;
-                var FPS = ("{{display.update_frequency}}" | 0);
+                var FPS = 60; // ("{{display.update_frequency}}" | 0);
                 var VSYNC = "{{display.vsync}}" == "true";
                 if (!FPS || !VSYNC) {
                     console.log("Semi-fixed timestep requires display.vsync = 1, display.update_frequency > 60");
