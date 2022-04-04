@@ -4,7 +4,7 @@ go.property("factory_car_02_url", msg.url("#factory_car_02"))
 go.property("factory_car_03_url", msg.url("#factory_car_03"))
 go.property("factory_car_04_url", msg.url("#factory_car_04"))
 go.property("factory_car_police_url", msg.url("#factory_car_police"))
-go.property("car_spawn_rate", 0.75)
+go.property("car_spawn_rate", 1)
 go.property("car_spawn_lanes", 5)
 go.property("lane_width", 3.6)
 go.property("police_accel_const", 12)
@@ -28,7 +28,7 @@ local DIFF_TABLE = {
     { merge_count = 0, max_colors = 2 },
     { merge_count = 2, max_colors = 3 },
     { merge_count = 6, max_colors = 4 },
-    { merge_count = 9, max_colors = 4, car_spawn_rate = 1 }
+    { merge_count = 9, max_colors = 4, car_spawn_rate = 1.5 }
 }
 
 local function get_random_factory(self, exclude_index, max)
