@@ -1,4 +1,5 @@
 local level_state = require("ld50.scenes.getaway.level_state")
+local math3d = require("scene3d.helpers.math3d")
 
 local function init_node(self, name, alpha)
     self[name] = gui.get_node(name)
@@ -11,16 +12,24 @@ function init(self)
     init_node(self, "speed_text")
     init_node(self, "score_text")
 
+    init_node(self, "speedometer_pie")
+    self.pie_angle_low = gui.get_fill_angle(self.speedometer_pie)
+    self.pie_angle_high = -350
+
     self.speed_update = 1
+
+    self.time = 0
 end
 
 function final(self)
 end
 
 function update(self, dt)
+    self.time = self.time + dt
+
     self.speed_update = self.speed_update + dt
     if self.speed_update > 0.2 then
-        gui.set_text(self.speed_text, string.format("%d", level_state.car_speed * 5))
+        gui.set_text(self.speed_text, string.format("%d", math.abs(level_state.car_speed) * 5))
         self.speed_update = 0
     end
 
@@ -34,6 +43,17 @@ function update(self, dt)
     gui.set_text(self.score_text, string.format("%d", score))
 
     gui.set_enabled(self.score_text, score > 0)
+
+    local unstability = (math3d.ping_pong(self.time, 0.04) - (0.04 / 2)) * 12
+    -- print(level_state.car_accel_const, unstability, level_state.car_accel_boost)
+    local max_accel = 12 + 0.04 * 12
+    local max_power = 20
+    local max_speed = 80
+    local p = math3d.clamp01(level_state.car_accel_boost / max_power) * 0.8
+    self.speedometer_boost = math3d.lerp(0.7, self.speedometer_boost or p, p, dt)
+    local v = self.speedometer_boost + math3d.clamp01((level_state.car_accel_const + unstability) / max_accel) * 0.1
+    v = v + math3d.clamp01(math.abs(level_state.car_speed) * 5 / max_speed) * 0.1
+    gui.set_fill_angle(self.speedometer_pie, vmath.lerp(v, self.pie_angle_low, self.pie_angle_high))
 end
 
 function on_message(self, message_id, message, sender)
