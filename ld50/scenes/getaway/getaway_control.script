@@ -244,6 +244,11 @@ local function bust(self, message)
         return
     end
 
+    -- POLICE CAN BUST ONLY PLAYERS!
+    if not go.get(other_car.car_main, "is_player") then
+        return
+    end
+
     other_car.killed = true
 
     -- local boost = go.get(car.car_main, "acceleration_boost")
@@ -251,6 +256,7 @@ local function bust(self, message)
     -- msg.post(other_car.car_main, "kill")
 
     go.set(other_car.car_main, "keyboard_input", false)
+    go.set(other_car.car_main, "direction_correction", false)
     go.set(other_car.car_main, "input_gas_pedal_value", 0)
 
     go.animate(self.orbit_follow_url, "distance", go.PLAYBACK_ONCE_FORWARD, 54, go.EASING_INOUTSINE, 1, 0.05)
