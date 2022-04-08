@@ -1,6 +1,6 @@
 # Merge Getaway - Ludum Dare 50
 
-![](https://static.jam.vg/raw/200/81/z/4a2ef.gif)
+[![Play on Itch.io](https://static.jam.vg/raw/200/81/z/4d8ef.gif)](https://glitchman.itch.io/merge-getaway)
 
 ***More information will be soon!***
 
