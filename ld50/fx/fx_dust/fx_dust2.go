@@ -3,7 +3,6 @@ embedded_components {
   type: "mesh"
   data: "material: \"/ld50/fx/materials/basic_color_world.material\"\n"
   "vertices: \"/ld50/assets/meshes/fx_dust2.buffer\"\n"
-  "textures: \"/scene3d/assets/textures/grid_10x10.png\"\n"
   "primitive_type: PRIMITIVE_TRIANGLES\n"
   "position_stream: \"position\"\n"
   "normal_stream: \"normal\"\n"
