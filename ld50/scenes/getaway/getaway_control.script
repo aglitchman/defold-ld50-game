@@ -7,6 +7,7 @@ go.property("factory_car_04_url", msg.url("#factory_car_04"))
 go.property("factory_car_police_url", msg.url("#factory_car_police"))
 go.property("car_spawn_rate", 1)
 go.property("car_spawn_lanes", 5)
+go.property("car_hard_limit", 30)
 go.property("lane_width", 3.6)
 go.property("police_accel_const", 12)
 go.property("police_accel_const_max", 15)
@@ -172,6 +173,11 @@ local function car_spawning(self, dt)
     -- end
 
     if level_state.ftue and level_state.car_count >= 3 then
+        self.car_spawn_timer = 0
+        return
+    end
+
+    if level_state.car_count >= self.car_hard_limit then
         self.car_spawn_timer = 0
         return
     end
