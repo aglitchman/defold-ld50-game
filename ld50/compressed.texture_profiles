@@ -3,7 +3,7 @@ path_settings {
   profile: "Default"
 }
 path_settings {
-  path: "/scene3d/assets/textures/**"
+  path: "/scene3d/assets/**"
   profile: "RGBA UASTC"
 }
 path_settings {
@@ -34,5 +34,7 @@ profiles {
       compression_type: COMPRESSION_TYPE_BASIS_UASTC
     }
     mipmaps: true
+    max_texture_size: 0
+    premultiply_alpha: true
   }
 }
