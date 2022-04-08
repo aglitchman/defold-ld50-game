@@ -8,7 +8,7 @@ function M.reset()
     -- Global State
     M.window_focused = true
     M.audio_muted = false -- Usually paused by ads, etc.
-    M.touch_control = true
+    M.touch_control = false -- Set by main.script if the player has multitouch display, i.e. they play on a mobile phone/tablet.
 
     -- Serializable
     M.first_start = true

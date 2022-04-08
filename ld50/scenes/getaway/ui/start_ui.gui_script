@@ -1,4 +1,5 @@
 local level_state = require("ld50.scenes.getaway.level_state")
+local global_state = require("ld50.scripts.global_state")
 local xgui = require("ld50.scripts.xgui")
 
 local function toggle_buttons_alpha(self)
@@ -17,6 +18,9 @@ function init(self)
     xgui.init_node(self, "credits_text", 0)
     xgui.init_node(self, "help_button_a", 0)
     xgui.init_node(self, "help_button_d", 0)
+    xgui.init_node(self, "help_split", 0)
+    xgui.init_node(self, "help_tap_to_start", 1)
+    xgui.init_node(self, "tap_to_start_text", 0)
 
     local y1 = xgui.get_y(self.title_text1)
     xgui.set_y(self.title_text1, y1 - 200)
@@ -30,16 +34,19 @@ function init(self)
 
     xgui.anim_alpha(self.credits_text, 1, 0.5, 0.5)
 
+    xgui.anim_alpha(self.tap_to_start_text, 1, 0.5, 0.5)
     xgui.anim_alpha(self.help_button_a, 0.5, 0.5, 0.5)
     xgui.anim_alpha(self.help_button_d, 1, 0.5, 0.5, function (self)
         timer.delay(0.5, true, toggle_buttons_alpha)
     end)
+    xgui.anim_alpha(self.help_split, 1, 0.5, 0.5)
 end
 
 function final(self)
 end
 
 function update(self, dt)
+    gui.set_alpha(self.help_tap_to_start, global_state.touch_control and 1 or 0)
 end
 
 function on_message(self, message_id, message, sender)
