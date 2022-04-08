@@ -3,6 +3,10 @@ local global_state = require("ld50.scripts.global_state")
 local xgui = require("ld50.scripts.xgui")
 
 local function toggle_buttons_alpha(self)
+    if self.hiding then
+        return
+    end
+
     if xgui.get_alpha(self.help_button_d) == 1 then
         xgui.set_alpha(self.help_button_a, 1)
         xgui.set_alpha(self.help_button_d, 0.5)
@@ -56,15 +60,13 @@ function on_message(self, message_id, message, sender)
         end
         self.hiding = true
 
+        local duration = 0.25
         for i, n in ipairs(self.all_nodes) do
-            local callback
-            if i == #self.all_nodes then
-                callback = function (self)
-                    msg.post("#delete_go", "delete_go")
-                end
-            end
-            xgui.anim_alpha(n, 0, 0.25, 0, callback)
+            xgui.anim_alpha(n, 0, duration, 0)
         end
+        timer.delay(duration + 0.01, false, function (self)
+            msg.post("#delete_go", "delete_go")
+        end)
     end
 end
 
