@@ -80,6 +80,9 @@ local LINEAR_DAMPING = hash("linear_damping")
 local ANGULAR_DAMPING = hash("angular_damping")
 local MASS = hash("mass")
 
+local CRUISE_CLOSEST = { all = false }
+local CRUISE_GROUPS = { hash("default") }
+
 local WHEEL_FL = 1
 local WHEEL_FR = 2
 local WHEEL_RL = 3
@@ -120,7 +123,6 @@ local function correct_direction(self)
         target_yaw = target_yaw + 360
     end
 
-    local sz = 1
     local sx = (target_yaw > 0 and -1 or 1) * math3d.clamp(math.abs(target_yaw) / 20, 0, 1)
 
     return sx
@@ -331,8 +333,7 @@ function update(self, dt)
         level_state.car_distance = level_state.car_distance + c.car_distance
     end
 
-    local car_rotation = go.get_rotation(self.physics_url)
-    c.car_rotation = car_rotation
+    c.car_rotation = go.get_rotation(self.physics_url)
     c.car_euler = go.get(self.physics_url, "euler")
 
     if not self.stop_visuals then
@@ -357,10 +358,9 @@ function update(self, dt)
     local sx = math3d.clamp(self.input_steering_wheel_value, -1, 1)
 
     if self.adaptive_cruise_control then
-        local CLOSEST = { all = false }
-        local raycast_groups = { hash("default") }
         local forward_dir = vmath.rotate(c.car_rotation, render3d.FORWARD) * 4
-        local results = physics.raycast(c.car_position, c.car_position + forward_dir, raycast_groups, CLOSEST)
+        local pos = c.car_position + vmath.vector3(0, 0.5, 0)
+        local results = physics.raycast(pos, pos + forward_dir, CRUISE_GROUPS, CRUISE_CLOSEST)
         if results ~= nil then
             for _, result in ipairs(results) do
                 sz = 0
