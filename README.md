@@ -4,7 +4,7 @@
 
 ***More information will be soon!***
 
-The police unexpectedly started pursuing you. Sooner or later... every criminal will get caught! Merge cars of the same colour to escape.
+The police unexpectedly started pursuing you. Sooner or later... every criminal will get caught! Merge with cars of the same colour to accelerate and to escape from the police! 🚗🚓💨
 
 **[–> 🌟 PLAY THE GAME IN YOUR BROWSER 🌟 <–](https://glitchman.itch.io/merge-getaway)**
 
