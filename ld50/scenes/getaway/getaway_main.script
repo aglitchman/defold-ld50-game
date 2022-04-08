@@ -36,7 +36,10 @@ function final(self)
 
     audio.stop_bgm("music1")
 
-    global_state.first_start = false
+    if level_state.merge_count > 2 then
+        -- Set FTUE = false if player is able to merge more than 2 times
+        global_state.first_start = false
+    end
 end
 
 function update(self, dt)
