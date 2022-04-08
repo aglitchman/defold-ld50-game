@@ -22,7 +22,8 @@ The game is for LD50 the COMPO category.
 - Game engine: [Defold](https://defold.com/)
 - 3D framework: [Scene3D](https://github.com/indiesoftby/defold-scene3d)
 - 3D modelling: [SideFX Houdini](https://www.sidefx.com/)
-- Music: [Bandlab.com](https://www.bandlab.com/)
+- 2D graphics: [Affinity Designer](https://affinity.serif.com/en-us/designer/)
+- Music editor: [Bandlab](https://www.bandlab.com/)
 
 ## License
 
