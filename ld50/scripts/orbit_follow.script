@@ -1,0 +1,76 @@
+go.property("enabled", true)
+go.property("follow_object_id", hash(""))
+go.property("camera_object_id", hash(""))
+go.property("yaw", 0)
+go.property("pitch", -6)
+go.property("distance", 8.15)
+go.property("distance2", 0)
+go.property("height", 1.9)
+go.property("height2", 0)
+go.property("move_forward", 3)
+
+go.property("late_update_priority", 1)
+
+local math3d = require("scene3d.helpers.math3d")
+local render3d = require("scene3d.render.render3d")
+
+local EMPTY_HASH = hash("")
+local EULER = hash("euler")
+local POSITION = hash("position")
+local UPDATE_RENDER = hash("update_render")
+local FORCE_UPDATE = hash("force_update")
+
+local function update_camera(self)
+    if self.follow_object_id == EMPTY_HASH then
+        return
+    end
+
+    if self.camera_object_id == EMPTY_HASH then
+        self.warn_empty_camera_once = self.warn_empty_camera_once or (print("orbit_follow.script: set the `camera_object_id` value") or true)
+        return
+    end
+
+    -- DEBUG
+    -- print("orbit_follow (" .. render3d.frame_num .. "): update camera")
+
+    local obj_rotation = go.get_rotation(self.follow_object_id)
+    local obj_position = go.get_position(self.follow_object_id)
+
+    local yaw = (90 + self.yaw) % 360
+    self.cur_yaw = yaw
+    self.cur_pitch = self.pitch
+
+    local d = self.distance + self.distance2 + self.move_forward
+    local h = self.height + self.height2
+    local pos = obj_position + vmath.rotate(obj_rotation, render3d.FORWARD) * self.move_forward
+    pos = pos + vmath.vector3(math.cos(math.rad(self.cur_yaw)) * d, h, math.sin(math.rad(self.cur_yaw)) * d)
+
+    local values = vmath.vector3(self.cur_pitch, 90 - self.cur_yaw, 0)
+    go.set(self.camera_object_id, EULER, values)
+    go.set(self.camera_object_id, POSITION, pos)
+end
+
+-- This update will happen after game objects have been moved by the physics engine
+local function late_update(self)
+    if self.enabled then
+        update_camera(self)
+    end
+end
+
+function init(self)
+    self.late_update_id = scene3d.prerender_register(late_update, self.late_update_priority)
+end
+
+function final(self)
+    scene3d.prerender_unregister(self.late_update_id)
+end
+
+function update(self, dt)
+    self.dt = dt
+end
+
+function on_message(self, message_id, message, sender)
+    if message_id == FORCE_UPDATE then
+        update_camera(self)
+    end
+end

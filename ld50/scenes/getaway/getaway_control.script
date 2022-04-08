@@ -1,4 +1,5 @@
 go.property("orbit_follow_url", msg.url("#orbit_follow"))
+go.property("ground_generator_url", msg.url("/ground_generator#generator"))
 go.property("factory_car_01_url", msg.url("#factory_car_01"))
 go.property("factory_car_02_url", msg.url("#factory_car_02"))
 go.property("factory_car_03_url", msg.url("#factory_car_03"))
@@ -20,6 +21,7 @@ go.property("debug_mesh_id", hash("debug_mesh"))
 local cars = require("ld50.cars.cars")
 local level_state = require("ld50.scenes.getaway.level_state")
 local render3d = require("scene3d.render.render3d")
+local math3d = require("scene3d.helpers.math3d")
 
 local EMPTY_HASH = hash("")
 local DISABLE = hash("disable")
@@ -48,9 +50,23 @@ local function get_random_factory(self, exclude_index, max)
     end
 end
 
+local function update_camera_yaw(self)
+    local yaw_range = { -6, -45 }
+    local distance_range = { 45, 0 }
+    local aspect_range = { 9/16, 16/9 }
+
+    local t = math3d.inverse_lerp(render3d.aspect_ratio, aspect_range[1], aspect_range[2])
+    local yaw = math3d.lerp(t, yaw_range[1], yaw_range[2])
+    local distance = math3d.lerp(t, distance_range[1], distance_range[2])
+
+    go.set(self.orbit_follow_url, "yaw", yaw)
+    go.set(self.orbit_follow_url, "distance2", distance)
+    go.set(self.orbit_follow_url, "height2", distance)
+end
+
 local function follow_object(self, obj_id)
     go.set(self.orbit_follow_url, "follow_object_id", obj_id)
-    go.set("/ground_generator#generator", "follow_object", obj_id)
+    go.set(self.ground_generator_url, "follow_object", obj_id)
 end
 
 local function spawn_player(self, position, rotation, exclude_car_color)
@@ -308,6 +324,8 @@ function update(self, dt)
     if self.have_police then
         update_police(self, dt)
     end
+
+    update_camera_yaw(self)
 end
 
 function on_message(self, message_id, message, sender)
