@@ -46,7 +46,7 @@ velocity_threshold = 1
 
 [bootstrap]
 main_collection = /ld50/main.collectionc
-render = /scene3d/render/render3d.renderc
+render = /ld50/render/render3d.renderc
 
 [graphics]
 default_texture_min_filter = linear
