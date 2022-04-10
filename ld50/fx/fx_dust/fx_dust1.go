@@ -1,7 +1,7 @@
 embedded_components {
   id: "mesh"
   type: "mesh"
-  data: "material: \"/ld50/fx/materials/basic_color_world.material\"\n"
+  data: "material: \"/ld50/fx/materials/dust1.material\"\n"
   "vertices: \"/ld50/assets/meshes/fx_dust1.buffer\"\n"
   "primitive_type: PRIMITIVE_TRIANGLES\n"
   "position_stream: \"position\"\n"
