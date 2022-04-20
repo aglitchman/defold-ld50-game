@@ -72,6 +72,26 @@ end
 
 local function spawn_player(self, position, rotation, exclude_car_color)
     local factory_url = get_random_factory(self, exclude_car_color, self.max_colors)
+
+    -- This code makes the game easier to play
+    local colors = {}
+    for _, car in pairs(cars.list) do
+        local car_pos = go.get_position(car.visuals_id)
+        if car_pos.z < position.z then
+            local distance = vmath.length(car_pos - position)
+            if car.car_color ~= exclude_car_color and self.factories[car.car_color] then
+                table.insert(colors, { c = car.car_color, d = distance })
+            end
+        end
+    end
+    if #colors > 0 then
+        table.sort(colors, function (a, b)
+            return a.d < b.d
+        end)
+        factory_url = self.factories[colors[1].c]
+    end
+    --
+
     local car_main, hull_obj_id = cars.spawn(factory_url, position, rotation)
     follow_object(self, hull_obj_id)
 
