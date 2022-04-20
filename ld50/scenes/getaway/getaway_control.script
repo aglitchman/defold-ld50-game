@@ -122,6 +122,7 @@ local function start(self)
     self.have_police = true
 
     go.set(self.player_car_main, "input_gas_pedal_value", 1)
+    go.set(self.player_car_main, "input_handbrake_value", 0)
     go.set(self.player_car_main, "acceleration_boost", 5)
 
     self.car_spawning = true
@@ -290,6 +291,8 @@ local function bust(self, message)
     go.set(other_car.car_main, "keyboard_input", false)
     go.set(other_car.car_main, "direction_correction", false)
     go.set(other_car.car_main, "input_gas_pedal_value", 0)
+    go.set(other_car.car_main, "input_handbrake_value", 0.25)
+    msg.post(other_car.car_main, "flash")
 
     go.animate(self.orbit_follow_url, "distance", go.PLAYBACK_ONCE_FORWARD, 54, go.EASING_INOUTSINE, 1, 0.05)
     go.animate(self.orbit_follow_url, "height", go.PLAYBACK_ONCE_FORWARD, 55, go.EASING_INOUTSINE, 1, 0.05)
@@ -317,6 +320,7 @@ function init(self)
     self.max_colors = DIFF_TABLE[1].max_colors
 
     spawn_player(self, go.get_position(), vmath.quat())
+    go.set(self.player_car_main, "input_handbrake_value", 1)
 end
 
 function final(self)

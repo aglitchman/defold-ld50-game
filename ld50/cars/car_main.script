@@ -53,6 +53,7 @@ go.property("slowdown_to_accel", 1)
 
 go.property("input_gas_pedal_value", 0)
 go.property("input_steering_wheel_value", 0)
+go.property("input_handbrake_value", 0)
 
 go.property("frustum_cull_enabled", true)
 go.property("frustum_mesh_max_dimension", 4.7)
@@ -235,6 +236,8 @@ local function init_car(self)
     -- end)
 
     self.car_data = {
+        meshes = meshes,
+
         car_mass = go.get(self.chassis_url, "mass"),
         car_first_frame = true,
         car_position = vmath.vector3(0),
@@ -356,6 +359,7 @@ function update(self, dt)
 
     local sz = math3d.clamp(self.input_gas_pedal_value, -1, 1)
     local sx = math3d.clamp(self.input_steering_wheel_value, -1, 1)
+    local handbrake_value = self.input_handbrake_value
 
     if self.adaptive_cruise_control then
         local forward_dir = vmath.rotate(c.car_rotation, render3d.FORWARD) * 4
@@ -434,8 +438,8 @@ function update(self, dt)
             msg.post(self.chassis_url, APPLY_FORCE, { force = traction_force, position = c.car_position })
         end
 
-        go.set(self.chassis_url, LINEAR_DAMPING, 0.4)
-        go.set(self.chassis_url, ANGULAR_DAMPING, 0.95)
+        go.set(self.chassis_url, LINEAR_DAMPING, math3d.clamp01(0.4 + handbrake_value))
+        go.set(self.chassis_url, ANGULAR_DAMPING, math3d.clamp01(0.95 + handbrake_value))
 
         -- FX: dust
         self.dust_accum = self.dust_accum + dt
@@ -531,6 +535,9 @@ function on_message(self, message_id, message, sender)
         end
 
         handle_kill(self)
+    elseif message_id == hash("flash") then
+        go.set(self.car_data.meshes[1], "tint.w", 3)
+        go.animate(self.car_data.meshes[1], "tint.w", go.PLAYBACK_ONCE_FORWARD, 1, go.EASING_OUTQUAD, 0.5)
     end
 end
 
